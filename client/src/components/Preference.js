@@ -25,7 +25,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column'
   },
   fixedHeight1: {
-    height: 630
+    height: 330,
+    marginBottom: theme.spacing(2)
   },
   fixedHeight2: {
     height: 193
@@ -370,36 +371,34 @@ function Preference({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item>
-              <MaterialTable
-                data={reserved}
-                columns={[
-                  {
-                    title: 'Start',
-                    field: 'start',
-                    render: rowData => parseStateToTime(rowData.start).format('h:mm a')
-                  },
-                  {
-                    title: 'End',
-                    field: 'end',
-                    render: rowData => parseStateToTime(rowData.end).format('h:mm a')
-                  },
-                  { title: 'Length (mins)', field: 'length' },
-                  { title: 'Weight', field: 'weight' }
-                ]}
-                options={{
-                  search: false,
-                  sorting: false,
-                  selection: false,
-                  toolbar: false,
-                  pageSizeOptions: [],
-                  pageSize: 7,
-                  padding: 'dense'
-                }}
-              />
-            </Grid>
           </Grid>
         </Paper>
+        <MaterialTable
+          data={reserved}
+          columns={[
+            {
+              title: 'Start',
+              field: 'start',
+              render: rowData => parseStateToTime(rowData.start).format('h:mm a')
+            },
+            {
+              title: 'End',
+              field: 'end',
+              render: rowData => parseStateToTime(rowData.end).format('h:mm a')
+            },
+            { title: 'Length (mins)', field: 'length' },
+            { title: 'Weight', field: 'weight' }
+          ]}
+          options={{
+            search: false,
+            sorting: false,
+            selection: false,
+            toolbar: false,
+            pageSizeOptions: [],
+            pageSize: 5,
+            padding: 'dense'
+          }}
+        />
       </Grid>
     </Grid>
   );
