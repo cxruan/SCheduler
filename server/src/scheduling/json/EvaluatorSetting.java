@@ -1,6 +1,6 @@
 package scheduling.json;
 
 public class EvaluatorSetting {
-	public int time;
-	public double weight;
+	public int time = -1;
+	public double weight = -1;
 }

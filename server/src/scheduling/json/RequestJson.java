@@ -22,6 +22,7 @@ public class RequestJson {
 		catch(JsonSyntaxException jse)
 		{
 			System.out.println(jse.getMessage());
+			return null;
 		}
 		
 		return data;

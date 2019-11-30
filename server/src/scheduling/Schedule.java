@@ -4,7 +4,7 @@ import java.lang.Comparable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-class Schedule implements Comparable<Schedule> {
+public class Schedule implements Comparable<Schedule> {
     Section[] sections;
     double score;
     String scheduleName;

@@ -7,26 +7,50 @@ import com.google.gson.Gson;
 
 import scheduling.json.RequestJson;
 import scheduling.json.ReservedSetting;
+import scheduling.json.SchedulingResponse;
 
 public class Scheduler {
 
     static final public int MAX_SCHEDULE_COUNT = 50;
-
+    
     private Evaluator early, late, breaks, reserved;
     private Course[] courses;
-    private Schedule[] schedules = null;
 
-    public Scheduler(Course[] c, Evaluator e, Evaluator l, Evaluator b, Evaluator r) {
-        courses = c;
-        early = e;
-        late = l;
-        breaks = b;
-        reserved = r;
-    }
-
-    public Scheduler(String json) {
+    public SchedulingResponse makeSchedules(String json) {
+    	
         RequestJson request = RequestJson.deserialize(json);
+        
+        SchedulingResponse response = new SchedulingResponse();
+        
+        if(request == null)
+        {
+        	response.error = "malformed request";
+        	return response;
+        }
+        
+        Schedule[] schedules = null;
+        
+        if(request.courses == null)
+        {
+        	response.error = "missing courses attribute";
+        	return response;
+        }
         courses = request.courses;
+        
+        if(request.preferences == null)
+        {
+        	response.error = "missing preferences attribute";
+        	return response;
+        }
+        if(request.preferences.early == null || 
+        		request.preferences.late == null || 
+        		request.preferences.breaks == null || 
+        		request.preferences.reserved == null)
+        {
+        	response.error = "incomplete preferences setting";
+        	return response;
+        }
+        
         early = new EarlyEvaluator(request.preferences.early.time, request.preferences.early.weight);
         late = new LateEvaluator(request.preferences.late.time, request.preferences.late.weight);
         ArrayList<ReservedTimeSlot> reservedArrayList = new ArrayList<ReservedTimeSlot>();
@@ -36,11 +60,6 @@ public class Scheduler {
         ReservedTimeSlot[] reservedSlots = reservedArrayList.toArray(new ReservedTimeSlot[] {});
         breaks = new BreakEvaluator(request.preferences.breaks.time, request.preferences.breaks.weight, reservedSlots);
         reserved = new ReserveEvaluator(reservedSlots);
-    }
-
-    public Schedule[] makeSchedules() {
-        if (schedules != null)
-            return schedules;
 
         ArrayList<Section> selected = new ArrayList<Section>();
         ArrayList<ArrayList<TimeRange>> timeTable = new ArrayList<ArrayList<TimeRange>>(7);
@@ -57,10 +76,11 @@ public class Scheduler {
         while (!schedulesQueue.isEmpty()) {
             results.add(schedulesQueue.remove());
         }
-
         Collections.reverse(results);
 
-        return schedules = results.toArray(new Schedule[] {});
+        response.results = results.toArray(new Schedule[] {});
+        
+        return response;
     }
 
     private void solve(int courseNum, int componentNum, ArrayList<Section> selected,
@@ -128,9 +148,9 @@ public class Scheduler {
         }
     }
 
-    public String makeJsonSchedules() {
+    public String makeJsonSchedules(String json) {
 
-        Schedule[] result = makeSchedules();
+    	SchedulingResponse result = makeSchedules(json);
 
         Gson gson = new Gson();
 
