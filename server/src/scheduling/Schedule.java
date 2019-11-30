@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Schedule implements Comparable<Schedule> {
-    Section[] sections;
-    double score;
+    
+    int id;
     String scheduleName;
+    double score;    
+    Section[] sections;
 
     public Schedule(Section[] s) {
         sections = s.clone();

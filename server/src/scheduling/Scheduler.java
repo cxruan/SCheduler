@@ -77,6 +77,10 @@ public class Scheduler {
             results.add(schedulesQueue.remove());
         }
         Collections.reverse(results);
+        for(int i = 0; i < results.size(); i++)
+        {
+        	results.get(i).id = i + 1;
+        }
 
         response.results = results.toArray(new Schedule[] {});
         
