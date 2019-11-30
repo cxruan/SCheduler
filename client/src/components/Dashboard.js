@@ -111,10 +111,19 @@ const useStyles = makeStyles(theme => ({
 
 const mapDispatchToProps = dispatch => ({
   onTabClick: (tabId, tabName) => dispatch({ type: 'CHANGE_TAB', tabId, tabName }),
-  onDrawerClick: openDrawer => dispatch({ type: 'TOGGLE_DRAWER', openDrawer })
+  onDrawerClick: openDrawer => dispatch({ type: 'TOGGLE_DRAWER', openDrawer }),
+  onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin })
 });
 
-function Dashboard({ tabId, tabName, openDrawer, onTabClick, onDrawerClick, enqueueSnackbar }) {
+function Dashboard({
+  tabId,
+  tabName,
+  openDrawer,
+  onTabClick,
+  onDrawerClick,
+  onLoginClick,
+  enqueueSnackbar
+}) {
   const classes = useStyles();
   const handleDrawerOpen = () => {
     onDrawerClick(true);
@@ -132,6 +141,10 @@ function Dashboard({ tabId, tabName, openDrawer, onTabClick, onDrawerClick, enqu
 
   const handleTabClick = (id, name) => {
     onTabClick(id, name);
+  };
+
+  const handleLoginOpen = () => {
+    onLoginClick(true);
   };
 
   return (
@@ -154,7 +167,7 @@ function Dashboard({ tabId, tabName, openDrawer, onTabClick, onDrawerClick, enqu
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {tabName}
           </Typography>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={handleLoginOpen}>
             <AccountCircleIcon />
           </IconButton>
         </Toolbar>
@@ -247,7 +260,9 @@ Dashboard.propTypes = {
   tabName: PropTypes.string.isRequired,
   openDrawer: PropTypes.bool.isRequired,
   onTabClick: PropTypes.func.isRequired,
-  onDrawerClick: PropTypes.func.isRequired
+  onDrawerClick: PropTypes.func.isRequired,
+  onLoginClick: PropTypes.func.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 export default connect(state => state.tabsControl, mapDispatchToProps)(withSnackbar(Dashboard));

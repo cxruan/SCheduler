@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -29,16 +31,30 @@ const useStyles = makeStyles(theme => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1)
   },
-  submit: {
+  button: {
     margin: theme.spacing(3, 0, 2)
   }
 }));
 
-export default function LoginDialog({ open }) {
+const mapDispatchToProps = dispatch => ({
+  onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin }),
+  onRegisterClick: openRegister => dispatch({ type: 'TOGGLE_REGISTER', openRegister })
+});
+
+function LoginDialog({ openLogin, onLoginClick, onRegisterClick }) {
   const classes = useStyles();
 
+  const handleLoginClose = () => {
+    onLoginClick(false);
+  };
+
+  const handleRegisterOpen = () => {
+    onLoginClick(false);
+    onRegisterClick(true);
+  };
+
   return (
-    <Dialog aria-labelledby="simple-dialog-title" open={open}>
+    <Dialog aria-labelledby="simple-dialog-title" open={openLogin} onClose={handleLoginClose}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -74,9 +90,12 @@ export default function LoginDialog({ open }) {
               fullWidth
               variant="contained"
               color="primary"
-              className={classes.submit}
+              className={classes.button}
             >
               Sign In
+            </Button>
+            <Button fullWidth className={classes.button} onClick={handleRegisterOpen}>
+              Don&apos;t have an account? Sign Up
             </Button>
           </form>
         </div>
@@ -84,3 +103,11 @@ export default function LoginDialog({ open }) {
     </Dialog>
   );
 }
+
+LoginDialog.propTypes = {
+  openLogin: PropTypes.bool.isRequired,
+  onLoginClick: PropTypes.func.isRequired,
+  onRegisterClick: PropTypes.func.isRequired
+};
+
+export default connect(state => state.tabsControl, mapDispatchToProps)(LoginDialog);

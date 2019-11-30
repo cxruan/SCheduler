@@ -1,15 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import clsx from 'clsx';
 import MaterialTable from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Chip from '@material-ui/core/Chip';
-import { KeyboardTimePicker } from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
+import { TimePicker } from '@material-ui/pickers';
+import {
+  TextField,
+  InputAdornment,
+  Button,
+  Chip,
+  Slider,
+  Typography,
+  Paper,
+  Grid
+} from '@material-ui/core';
+import { parseStateToTime, parseTimeToState } from '../utils';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -26,10 +32,81 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Preference() {
+const mapDispatchToProps = dispatch => ({
+  onTimeChange: (name, time) => dispatch({ type: 'SET_TIME', name, time }),
+  onWeightChange: (name, weight) => dispatch({ type: 'SET_WEIGHT', name, weight }),
+  onAddNewReserved: newReserved => dispatch({ type: 'ADD_NEW_RESERVED', newReserved }),
+  onClearReserved: () => dispatch({ type: 'CLEAR_RESERVED' })
+});
+
+function Preference({
+  early,
+  late,
+  breaks,
+  reserved,
+  onTimeChange,
+  onWeightChange,
+  onAddNewReserved,
+  onClearReserved
+}) {
+  const [newReserved, setNewReserved] = React.useState({
+    start: 690,
+    end: 750,
+    length: 45,
+    weight: 50
+  });
+
   const classes = useStyles();
   const fixedHeightPaper1 = clsx(classes.paper, classes.fixedHeight1);
   const fixedHeightPaper2 = clsx(classes.paper, classes.fixedHeight2);
+
+  const handleEarlyTimeChange = date => {
+    onTimeChange('early', parseTimeToState(date));
+  };
+
+  const handleEarlyWeightChange = (event, value) => {
+    onWeightChange('early', value);
+  };
+
+  const handleLateTimeChange = date => {
+    onTimeChange('late', parseTimeToState(date));
+  };
+
+  const handleLateWeightChange = (event, value) => {
+    onWeightChange('late', value);
+  };
+
+  const handleBreaksTimeChange = event => {
+    onTimeChange('breaks', parseInt(event.target.value, 10));
+  };
+
+  const handleBreaksWeightChange = (event, value) => {
+    onWeightChange('breaks', value);
+  };
+
+  const handleNewReservedStartChange = date => {
+    setNewReserved(prevState => ({ ...prevState, start: parseTimeToState(date) }));
+  };
+
+  const handleNewReservedEndChange = date => {
+    setNewReserved(prevState => ({ ...prevState, end: parseTimeToState(date) }));
+  };
+
+  const handleNewReservedLengthChange = event => {
+    setNewReserved(prevState => ({ ...prevState, length: parseInt(event.target.value, 10) }));
+  };
+
+  const handleNewReservedWeightChange = (event, value) => {
+    setNewReserved(prevState => ({ ...prevState, weight: value }));
+  };
+
+  const handleAddNewReserved = () => {
+    onAddNewReserved(newReserved);
+  };
+
+  const handleClearReserved = () => {
+    onClearReserved();
+  };
 
   return (
     <Grid container spacing={3}>
@@ -46,13 +123,22 @@ function Preference() {
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Chip color="primary" label="Yes" />
+                      <Chip color="primary" label="No" />
                     </Grid>
                     <Grid item xs>
-                      <Slider step={0.1} marks min={0} max={1} />
+                      <Slider
+                        id="early"
+                        defaultValue={early.weight}
+                        valueLabelDisplay="auto"
+                        step={10}
+                        marks
+                        min={0}
+                        max={100}
+                        onChangeCommitted={handleEarlyWeightChange}
+                      />
                     </Grid>
                     <Grid item>
-                      <Chip color="primary" label="No" />
+                      <Chip color="primary" label="Yes" />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -63,10 +149,11 @@ function Preference() {
                         How early is early?
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <KeyboardTimePicker
-                        ampm={false}
-                        value={new Date('December 17, 1995 00:00:00')}
+                    <Grid item xs={2}>
+                      <TimePicker
+                        inputProps={{ style: { textAlign: 'center' } }}
+                        value={parseStateToTime(early.time)}
+                        onChange={handleEarlyTimeChange}
                       />
                     </Grid>
                   </Grid>
@@ -85,13 +172,21 @@ function Preference() {
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Chip color="primary" label="Yes" />
+                      <Chip color="primary" label="No" />
                     </Grid>
                     <Grid item xs>
-                      <Slider step={0.1} marks min={0} max={1} />
+                      <Slider
+                        defaultValue={late.weight}
+                        valueLabelDisplay="auto"
+                        step={10}
+                        marks
+                        min={0}
+                        max={100}
+                        onChangeCommitted={handleLateWeightChange}
+                      />
                     </Grid>
                     <Grid item>
-                      <Chip color="primary" label="No" />
+                      <Chip color="primary" label="Yes" />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -102,10 +197,11 @@ function Preference() {
                         How late is late?
                       </Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                      <KeyboardTimePicker
-                        ampm={false}
-                        value={new Date('December 17, 1995 00:00:00')}
+                    <Grid item xs={2}>
+                      <TimePicker
+                        inputProps={{ style: { textAlign: 'center' } }}
+                        value={parseStateToTime(late.time)}
+                        onChange={handleLateTimeChange}
                       />
                     </Grid>
                   </Grid>
@@ -124,13 +220,21 @@ function Preference() {
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Chip color="primary" label="Yes" />
+                      <Chip color="primary" label="No" />
                     </Grid>
                     <Grid item xs>
-                      <Slider step={0.1} marks min={0} max={1} />
+                      <Slider
+                        defaultValue={breaks.weight}
+                        valueLabelDisplay="auto"
+                        step={10}
+                        marks
+                        min={0}
+                        max={100}
+                        onChangeCommitted={handleBreaksWeightChange}
+                      />
                     </Grid>
                     <Grid item>
-                      <Chip color="primary" label="No" />
+                      <Chip color="primary" label="Yes" />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -142,9 +246,17 @@ function Preference() {
                       </Typography>
                     </Grid>
                     <Grid item xs={3}>
-                      <KeyboardTimePicker
-                        ampm={false}
-                        value={new Date('December 17, 1995 00:00:00')}
+                      <TextField
+                        type="number"
+                        InputLabelProps={{
+                          shrink: true
+                        }}
+                        margin="none"
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">Mins</InputAdornment>
+                        }}
+                        onChange={handleBreaksTimeChange}
+                        defaultValue={breaks.time}
                       />
                     </Grid>
                   </Grid>
@@ -159,22 +271,30 @@ function Preference() {
           <Grid container spacing={2} direction="column">
             <Grid item>
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                I need a break.
+                I need reservedd breaks.
               </Typography>
             </Grid>
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Chip color="primary" label="From around" />
+                  <Chip color="primary" label="From" />
                 </Grid>
                 <Grid item xs={3}>
-                  <KeyboardTimePicker ampm={false} value={new Date('December 17, 1995 00:00:00')} />
+                  <TimePicker
+                    inputProps={{ style: { textAlign: 'center' } }}
+                    value={parseStateToTime(newReserved.start)}
+                    onChange={handleNewReservedStartChange}
+                  />
                 </Grid>
                 <Grid item>
                   <Chip color="primary" label="To" />
                 </Grid>
                 <Grid item xs={3}>
-                  <KeyboardTimePicker ampm={false} value={new Date('December 17, 1995 00:00:00')} />
+                  <TimePicker
+                    inputProps={{ style: { textAlign: 'center' } }}
+                    value={parseStateToTime(newReserved.end)}
+                    onChange={handleNewReservedEndChange}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -182,11 +302,42 @@ function Preference() {
               <Grid container spacing={2}>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Don't care
+                    Minimum time that overlaps the above time frame.
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    margin="none"
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">Mins</InputAdornment>
+                    }}
+                    onChange={handleNewReservedLengthChange}
+                    defaultValue={newReserved.length}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                    Don&apos;t care
                   </Typography>
                 </Grid>
                 <Grid item xs>
-                  <Slider step={0.1} marks min={0} max={1} />
+                  <Slider
+                    defaultValue={newReserved.weight}
+                    valueLabelDisplay="auto"
+                    step={10}
+                    marks
+                    min={0}
+                    max={100}
+                    onChangeCommitted={handleNewReservedWeightChange}
+                  />
                 </Grid>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
@@ -196,26 +347,46 @@ function Preference() {
               </Grid>
             </Grid>
             <Grid item>
-              <Button fullWidth variant="outlined" color="primary">
-                Add
-              </Button>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleAddNewReserved}
+                  >
+                    Add
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleClearReserved}
+                  >
+                    Clear
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
               <MaterialTable
-                data={[
-                  {
-                    id: 1,
-                    start: '12:00',
-                    end: '13:00',
-                    cost: 15.0
-                  }
-                ]}
+                data={reserved}
                 columns={[
-                  { title: 'Start', field: 'start' },
-                  { title: 'End', field: 'end' },
-                  { title: 'Cost', field: 'cost' }
+                  {
+                    title: 'Start',
+                    field: 'start',
+                    render: rowData => parseStateToTime(rowData.start).format('h:mm a')
+                  },
+                  {
+                    title: 'End',
+                    field: 'end',
+                    render: rowData => parseStateToTime(rowData.end).format('h:mm a')
+                  },
+                  { title: 'Length (mins)', field: 'length' },
+                  { title: 'Weight', field: 'weight' }
                 ]}
-                parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
                 options={{
                   search: false,
                   sorting: false,
@@ -234,4 +405,15 @@ function Preference() {
   );
 }
 
-export default Preference;
+Preference.propTypes = {
+  early: PropTypes.object.isRequired,
+  late: PropTypes.object.isRequired,
+  breaks: PropTypes.object.isRequired,
+  reserved: PropTypes.array.isRequired,
+  onWeightChange: PropTypes.func.isRequired,
+  onTimeChange: PropTypes.func.isRequired,
+  onAddNewReserved: PropTypes.func.isRequired,
+  onClearReserved: PropTypes.func.isRequired
+};
+
+export default connect(state => state.preferenceControl, mapDispatchToProps)(Preference);
