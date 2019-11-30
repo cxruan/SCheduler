@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import DateFnsUtils from '@date-io/date-fns';
+import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { SnackbarProvider } from 'notistack';
 import './index.css';
@@ -11,7 +11,7 @@ import store from './redux/store';
 ReactDOM.render(
   <Provider store={store}>
     <SnackbarProvider>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
         <App />
       </MuiPickersUtilsProvider>
     </SnackbarProvider>

@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -34,11 +36,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function RegisterDialog({ open }) {
+const mapDispatchToProps = dispatch => ({
+  onRegisterClick: openRegister => dispatch({ type: 'TOGGLE_REGISTER', openRegister })
+});
+
+function RegisterDialog({ openRegister, onRegisterClick }) {
   const classes = useStyles();
 
+  const handleRegisterClose = () => {
+    onRegisterClick(false);
+  };
+
   return (
-    <Dialog aria-labelledby="simple-dialog-title" open={open}>
+    <Dialog aria-labelledby="simple-dialog-title" open={openRegister} onClose={handleRegisterClose}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -94,3 +104,10 @@ export default function RegisterDialog({ open }) {
     </Dialog>
   );
 }
+
+RegisterDialog.propTypes = {
+  openRegister: PropTypes.bool.isRequired,
+  onRegisterClick: PropTypes.func.isRequired
+};
+
+export default connect(state => state.tabsControl, mapDispatchToProps)(RegisterDialog);

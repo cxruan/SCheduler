@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import MaterialTable from 'material-table';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -23,188 +24,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CourseBin() {
+function CourseBin({ data }) {
   const classes = useStyles();
   return (
     <MaterialTable
-      data={[
-        {
-          id: 1,
-          name: 'CSCI-201',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'adult'
-        },
-        {
-          id: 2,
-          name: 'Lecture',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 1
-        },
-        {
-          id: 3,
-          name: 'Lab',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 1
-        },
-        {
-          id: 4,
-          name: 'Quiz',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 1
-        },
-        {
-          id: 5,
-          name: '29929R',
-          time: '3:30-5:20pm',
-          days: 'Tuesday',
-          instructor: '',
-          location: 'SAL 109',
-          penalized: true,
-          type: 'child',
-          parentId: 3
-        },
-        {
-          id: 6,
-          name: '29930R',
-          time: '10:00-11:50am',
-          days: 'Wednesday',
-          instructor: '',
-          location: 'SAL 109',
-          penalized: true,
-          type: 'child',
-          parentId: 3
-        },
-        {
-          id: 7,
-          name: '29931R',
-          time: '5:30-7:20pm',
-          days: 'Tuesday',
-          instructor: '',
-          location: 'SAL 109',
-          penalized: true,
-          type: 'child',
-          parentId: 3
-        },
-        {
-          id: 8,
-          name: 'CSCI-270',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'adult'
-        },
-        {
-          id: 9,
-          name: 'Lecture',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 8
-        },
-        {
-          id: 10,
-          name: 'Discussion',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 8
-        },
-        {
-          id: 11,
-          name: 'Quiz',
-          time: '',
-          days: '',
-          instructor: '',
-          location: '',
-          penalized: true,
-          type: 'child',
-          parentId: 8
-        },
-        {
-          id: 12,
-          name: '29956R',
-          time: '4:30-5:50pm',
-          days: 'Mon, Wed',
-          instructor: 'Shahriar Shamsian',
-          location: 'MHP 101',
-          penalized: true,
-          type: 'child',
-          parentId: 9
-        },
-        {
-          id: 13,
-          name: '29956R',
-          time: '4:30-5:50pm',
-          days: 'Mon, Wed',
-          instructor: 'Shahriar Shamsian',
-          location: 'MHP 101',
-          penalized: true,
-          type: 'child',
-          parentId: 2
-        },
-        {
-          id: 14,
-          name: '29956R',
-          time: '4:30-5:50pm',
-          days: 'Mon, Wed',
-          instructor: 'Shahriar Shamsian',
-          location: 'MHP 101',
-          penalized: true,
-          type: 'child',
-          parentId: 4
-        },
-        {
-          id: 15,
-          name: '29956R',
-          time: '4:30-5:50pm',
-          days: 'Mon, Wed',
-          instructor: 'Shahriar Shamsian',
-          location: 'MHP 101',
-          penalized: true,
-          type: 'child',
-          parentId: 10
-        },
-        {
-          id: 16,
-          name: '29956R',
-          time: '4:30-5:50pm',
-          days: 'Mon, Wed',
-          instructor: 'Shahriar Shamsian',
-          location: 'MHP 101',
-          penalized: true,
-          type: 'child',
-          parentId: 11
-        }
-      ]}
+      data={data}
       columns={[
-        { title: 'Name', field: 'name' },
+        { title: 'Name', field: 'id' },
+        { title: 'Type', field: 'class_type' },
         {
           title: 'Penalized',
           field: 'penalized',
@@ -249,4 +76,8 @@ function CourseBin() {
   );
 }
 
-export default CourseBin;
+CourseBin.propTypes = {
+  data: PropTypes.array.isRequired
+};
+
+export default connect(state => state.coursebinControl, null)(CourseBin);

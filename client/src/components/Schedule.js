@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import MaterialTable from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Chip from '@material-ui/core/Chip';
-import { KeyboardTimePicker } from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
+import { Grid, Button, Paper } from '@material-ui/core/';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import { parseStateToTime } from '../utils';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -26,7 +24,14 @@ const useStyles = makeStyles(theme => ({
 function Schedule() {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
+  const localizer = momentLocalizer(moment);
+  const events = [
+    {
+      start: 600,
+      end: 710,
+      title: 'Some title'
+    }
+  ];
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={6} lg={4}>
@@ -105,6 +110,23 @@ function Schedule() {
               </Button>
             </Grid>
           </Grid>
+          <Calendar
+            localizer={localizer}
+            defaultView="work_week"
+            views={['work_week']}
+            defaultDate={new Date(moment('1880-10-06 00:00'))}
+            events={events}
+            startAccessor={({ start }) => {
+              return new Date(parseStateToTime(start));
+            }}
+            endAccessor={({ end }) => new Date(parseStateToTime(end))}
+            style={{ height: 700 }}
+            toolbar={false}
+            min={new Date('1880-10-06 08:00')}
+            max={new Date('1880-10-06 20:00')}
+            step={15}
+            timeslots={8}
+          />
         </Paper>
       </Grid>
     </Grid>
