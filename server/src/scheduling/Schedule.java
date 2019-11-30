@@ -19,7 +19,7 @@ public class Schedule implements Comparable<Schedule> {
         if (score == rhs.score) {
             return hashCode() - rhs.hashCode();
         } else {
-            return (int) ((score - rhs.score) * 1000);
+            return (int) ((rhs.score - score) * 1000);
         }
     }
 
