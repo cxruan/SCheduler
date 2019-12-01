@@ -1,13 +1,10 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Checkbox, TextField, Button, Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MaterialTable from 'material-table';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -24,10 +21,80 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CourseBin({ data }) {
+function CustomedToolbar({ setLoading, addNewCourse }) {
   const classes = useStyles();
+  const [values, setValues] = React.useState({ termID: '20201', courseID: '' });
+  const [errorText, setErrorText] = React.useState('');
+
+  function handleValueChange(event) {
+    const { name, value } = event.target;
+    setValues(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
+
+  async function handleAddNewCourse() {
+    setLoading(true);
+    axios
+      .get('/api/AddCourseBin', {
+        params: {
+          termID: values.termID,
+          courseID: values.courseID
+        }
+      })
+      .then(function(response) {
+        addNewCourse(response.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  return (
+    <Box p={2} display="flex" alignItems="center">
+      <Box flexGrow={1}>
+        <Typography variant="h6">Course Bin</Typography>
+      </Box>
+      <Box>
+        <TextField
+          name="termID"
+          value={values.termID}
+          onChange={handleValueChange}
+          className={classes.textField}
+          label="Term Code"
+          margin="normal"
+        />
+        <TextField
+          name="courseID"
+          value={values.courseID}
+          onChange={handleValueChange}
+          className={classes.textField}
+          label="Course Name"
+          margin="normal"
+          error={Boolean(errorText) }
+          helperText={errorText}
+        />
+      </Box>
+      <Box>
+        <Button variant="contained" size="large" color="primary" onClick={handleAddNewCourse}>
+          Add
+        </Button>
+      </Box>
+    </Box>
+  );
+}
+
+const mapDispatchToProps = dispatch => ({
+  addNewCourse: newCourse => dispatch({ type: 'ADD_COURSE', newCourse })
+});
+
+function CourseBin({ data, addNewCourse }) {
+  const [loading, setLoading] = React.useState(false);
+
   return (
     <MaterialTable
+      isLoading={loading}
       data={data}
       columns={[
         { title: 'Name', field: 'id' },
@@ -35,7 +102,9 @@ function CourseBin({ data }) {
         {
           title: 'Penalized',
           field: 'penalized',
-          render: rowData => <Checkbox color="default" checked={rowData.penalized} />
+          render: rowData => (
+            <Checkbox style={{ padding: 0 }} color="default" checked={rowData.penalized} />
+          )
         },
         { title: 'Time', field: 'time' },
         { title: 'Days', field: 'days' },
@@ -51,33 +120,15 @@ function CourseBin({ data }) {
         padding: 'dense'
       }}
       components={{
-        Toolbar: () => (
-          <div>
-            <Box p={2} display="flex" alignItems="center">
-              <Box flexGrow={1}>
-                <Typography variant="h6">Course Bin</Typography>
-              </Box>
-              <Box>
-                <TextField className={classes.textField} label="Term Code" margin="normal" />
-              </Box>
-              <Box>
-                <TextField className={classes.textField} label="Course Name" margin="normal" />
-              </Box>
-              <Box>
-                <Button variant="contained" size="large" color="primary">
-                  Add
-                </Button>
-              </Box>
-            </Box>
-          </div>
-        )
+        Toolbar: () => <CustomedToolbar setLoading={setLoading} addNewCourse={addNewCourse} />
       }}
     />
   );
 }
 
 CourseBin.propTypes = {
-  data: PropTypes.array.isRequired
+  data: PropTypes.array.isRequired,
+  addNewCourse: PropTypes.func.isRequired
 };
 
-export default connect(state => state.coursebinControl, null)(CourseBin);
+export default connect(state => state.coursebinControl, mapDispatchToProps)(CourseBin);
