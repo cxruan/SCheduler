@@ -45,8 +45,6 @@ public class WSEndpoint {
     	if(httpSession != null) {
     		username = (String)httpSession.getAttribute("username");
     	}
-    	if(username == null)
-    		username = "admin";
     	if(username != null)
     	{
     		Schedule s = Schedule.fromJson(message);
@@ -74,7 +72,7 @@ public class WSEndpoint {
     				}
     				else
     				{
-    					sendMessage(new BroadcastResponse("ERROR", "wrong user or already published").toJson());
+    					sendMessage(new BroadcastResponse("ERROR", "username does not match").toJson());
     				}
     			}
     			if(bRes != null)
