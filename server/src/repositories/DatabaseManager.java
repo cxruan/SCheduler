@@ -136,7 +136,7 @@ public class DatabaseManager {
 
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement(querySearch);
+			ps = conn.prepareStatement(registerSearch);
 			ps.setString(1, username);
 			ps.setString(2, hash);
 			ps.setString(3, salt);
