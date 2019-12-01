@@ -7,8 +7,9 @@ import java.util.Collections;
 public class Schedule implements Comparable<Schedule> {
     
     int id;
+    boolean inDatabase = false;
     String scheduleName;
-    double score;    
+    double score = -1;    
     Section[] sections;
 
     public Schedule(Section[] s) {
@@ -44,5 +45,9 @@ public class Schedule implements Comparable<Schedule> {
             table[i] = currDay.toArray(new TimeRange[]{});
         }
         return timeTable = table;
+    }
+    
+    public boolean isValid() {
+    	return scheduleName != null && sections != null && sections.length > 0;
     }
 }

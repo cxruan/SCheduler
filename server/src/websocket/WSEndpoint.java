@@ -1,4 +1,4 @@
-package servlets;
+package websocket;
 
 import java.io.IOException;
 import java.util.Set;
@@ -32,21 +32,32 @@ public class WSEndpoint {
     		this.httpSession = (HttpSession) config.getUserProperties().get("httpSession");
     	}
         endpoints.add(this);
-        System.out.println(websocketSession.getId() + "Connected.");
+        System.out.println("WS: " + websocketSession.getId() + " connected.");
     }
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println(message);
-        for(WSEndpoint wse : endpoints)
-        {
-        	wse.sendMessage(message);
-        }
+    	if(httpSession.getAttribute("username") != null)
+    	{
+    		for(WSEndpoint wse : endpoints)
+            {
+    			if(!wse.equals(this))
+    			{
+                	wse.sendMessage(message);	
+    			}
+            }
+    		sendMessage("{\"status\":\"ok\"}"); 
+    	}
+    	else
+    	{
+    		sendMessage("{\"status\":\"not logged in\"}"); 
+    	}      
     }
  
     @OnClose
     public void onClose(Session session) throws IOException {
     	 endpoints.remove(this);
+    	 System.out.println("WS: " + websocketSession.getId() + " disconnected.");
     }
  
     @OnError
