@@ -34,7 +34,8 @@ export default function CustomCalEvent(data) {
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        {data.title} <br /> {data.event.type}
+        {data.title} <br />
+        {data.event.type}
       </Typography>
       <Popover
         id="mouse-over-popover"
@@ -56,6 +57,10 @@ export default function CustomCalEvent(data) {
         disableRestoreFocus
       >
         <Typography>
+          Name: {data.title}
+          <br />
+          Type: {data.event.type}
+          <br />
           Section: {data.event.ID}
           <br />
           Instructor: {data.event.instructor}

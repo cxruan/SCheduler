@@ -91,10 +91,11 @@ public class Scheduler {
             ArrayList<ArrayList<TimeRange>> timeTable, PriorityQueue<Schedule> schedulesQueue) {
         if (courseNum >= courses.length) {
             Schedule s = new Schedule(selected.toArray(new Section[] {}));
-            s.score += early.evaluate(s);
-            s.score += late.evaluate(s);
-            s.score += breaks.evaluate(s);
-            s.score += reserved.evaluate(s);
+            s.early = early.evaluate(s);
+            s.late += late.evaluate(s);
+            s.breaks += breaks.evaluate(s);
+            s.reserved += reserved.evaluate(s);
+            s.total = s.early + s.late + s.breaks + s.reserved;
 
             if (schedulesQueue.size() < MAX_SCHEDULE_COUNT) {
                 schedulesQueue.add(s);

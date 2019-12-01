@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Checkbox, TextField, Button, Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MaterialTable from 'material-table';
 import axios from 'axios';
+import { parseCourseToState } from '../utils';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -21,10 +22,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CustomedToolbar({ setLoading, addNewCourse }) {
+function CustomedToolbar({ errorText, setErrorText, setLoading, addNewCourse, onClearAll }) {
   const classes = useStyles();
   const [values, setValues] = React.useState({ termID: '20201', courseID: '' });
-  const [errorText, setErrorText] = React.useState('');
 
   function handleValueChange(event) {
     const { name, value } = event.target;
@@ -43,13 +43,22 @@ function CustomedToolbar({ setLoading, addNewCourse }) {
           courseID: values.courseID
         }
       })
-      .then(function(response) {
-        addNewCourse(response.data);
+      .then(function({ data }) {
+        if (data.status === 'error') {
+          setErrorText(data.message);
+        } else {
+          setErrorText('');
+          addNewCourse(parseCourseToState(data.data));
+        }
       })
       .finally(() => {
         setLoading(false);
       });
   }
+
+  const handleClearAll = () => {
+    onClearAll();
+  };
 
   return (
     <Box p={2} display="flex" alignItems="center">
@@ -72,7 +81,7 @@ function CustomedToolbar({ setLoading, addNewCourse }) {
           className={classes.textField}
           label="Course Name"
           margin="normal"
-          error={Boolean(errorText) }
+          error={Boolean(errorText)}
           helperText={errorText}
         />
       </Box>
@@ -81,29 +90,72 @@ function CustomedToolbar({ setLoading, addNewCourse }) {
           Add
         </Button>
       </Box>
+      <Box ml={1}>
+        <Button variant="contained" size="large" color="primary" onClick={handleClearAll}>
+          Clear
+        </Button>
+      </Box>
     </Box>
   );
 }
 
+CustomedToolbar.propTypes = {
+  errorText: PropTypes.string.isRequired,
+  setLoading: PropTypes.func.isRequired,
+  setErrorText: PropTypes.func.isRequired,
+  addNewCourse: PropTypes.func.isRequired,
+  onClearAll: PropTypes.func.isRequired
+};
+
 const mapDispatchToProps = dispatch => ({
-  addNewCourse: newCourse => dispatch({ type: 'ADD_COURSE', newCourse })
+  addNewCourse: newCourse => dispatch({ type: 'ADD_COURSE', newCourse }),
+  onPenalizeChange: id => dispatch({ type: 'PENALIZE_CHANGE', id }),
+  onIncludeChange: id => dispatch({ type: 'INCLUDE_CHANGE', id }),
+  onClearAll: () => dispatch({ type: 'CLEAR_ALL' })
 });
 
-function CourseBin({ data, addNewCourse }) {
+function CourseBin({ courses, addNewCourse, onPenalizeChange, onIncludeChange, onClearAll }) {
   const [loading, setLoading] = React.useState(false);
+  const [errorText, setErrorText] = React.useState('');
 
+  const handlePenalizeChange = event => {
+    onPenalizeChange(event.target.id);
+  };
+
+  const handleIncludeChange = event => {
+    onIncludeChange(event.target.id);
+  };
   return (
     <MaterialTable
       isLoading={loading}
-      data={data}
+      data={courses}
       columns={[
-        { title: 'Name', field: 'id' },
+        {
+          title: 'Include',
+          render: rowData => (
+            <Checkbox
+              id={rowData.id}
+              style={{ padding: 0 }}
+              checked={rowData.include}
+              onChange={handleIncludeChange}
+            />
+          )
+        },
+        {
+          title: 'Name',
+          field: 'id'
+        },
         { title: 'Type', field: 'class_type' },
         {
           title: 'Penalized',
-          field: 'penalized',
           render: rowData => (
-            <Checkbox style={{ padding: 0 }} color="default" checked={rowData.penalized} />
+            <Checkbox
+              id={rowData.id}
+              style={{ padding: 0 }}
+              color="default"
+              checked={rowData.penalize}
+              onChange={handlePenalizeChange}
+            />
           )
         },
         { title: 'Time', field: 'time' },
@@ -113,22 +165,33 @@ function CourseBin({ data, addNewCourse }) {
       ]}
       parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
       options={{
-        selection: true,
+        selection: false,
         search: false,
         sorting: false,
         showTextRowsSelected: false,
         padding: 'dense'
       }}
       components={{
-        Toolbar: () => <CustomedToolbar setLoading={setLoading} addNewCourse={addNewCourse} />
+        Toolbar: () => (
+          <CustomedToolbar
+            errorText={errorText}
+            setErrorText={setErrorText}
+            setLoading={setLoading}
+            addNewCourse={addNewCourse}
+            onClearAll={onClearAll}
+          />
+        )
       }}
     />
   );
 }
 
 CourseBin.propTypes = {
-  data: PropTypes.array.isRequired,
-  addNewCourse: PropTypes.func.isRequired
+  courses: PropTypes.array.isRequired,
+  addNewCourse: PropTypes.func.isRequired,
+  onPenalizeChange: PropTypes.func.isRequired,
+  onIncludeChange: PropTypes.func.isRequired,
+  onClearAll: PropTypes.func.isRequired
 };
 
 export default connect(state => state.coursebinControl, mapDispatchToProps)(CourseBin);

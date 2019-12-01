@@ -4,27 +4,17 @@ import javax.servlet.annotation.WebServlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 @WebServlet("/api/AddCourseBin")
@@ -45,19 +35,24 @@ public class AddCourseBin extends HttpServlet {
 
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-		String courseID = request.getParameter("courseID");
-		String termID = request.getParameter("termID");
+		String courseID = "";
+		String termID = "";
+		Success s = new Success();
+		Error e = new Error();
+		SerializedJson Json = new SerializedJson();
 
-		if (courseID == null && termID == null)
-			out.println("Course code and semester time must be specified.");
-		else if (courseID == null)
-			out.println("Course code cannot be empty.");
-		else if (termID == null)
-			out.println("Semester time unspecified.");
-		else {
-			courseID = courseID.trim();
-			termID = termID.trim();
+		if (request.getParameter("courseID") != null)
+			courseID = request.getParameter("courseID").trim();
+		if (request.getParameter("termID") != null)
+			termID = request.getParameter("termID").trim();
+
+		if (courseID == "" && termID == "") {
+			e.message = "Course code and semester time must be specified.";
+		} else if (courseID == "") {
+			e.message = "Course code cannot be empty.";
+		} else if (termID == "") {
+			e.message = "Semester time unspecified.";
+		} else {
 			URL url = new URL("https://classes.usc.edu/term-" + termID + "/course/" + courseID);
 			HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 			connect.setRequestMethod("GET");
@@ -77,12 +72,16 @@ public class AddCourseBin extends HttpServlet {
 			Elements info = doc.select(".sections");
 
 			if (info == null) {
-				out.println("Course doesn't exist.");
+				e.message = "Course doesn't exist.";
 			} else {
-				String Json = "";
-				Gson gson = new Gson();
 				courseID = courseID.toUpperCase();
+
 				boolean first = true;
+				boolean hasLec = false;
+				boolean hasDis = false;
+				boolean hasQuiz = false;
+				boolean hasLab = false;
+
 				for (Element row : info.select("tr")) {
 					if (first) {
 						first = false;
@@ -90,7 +89,7 @@ public class AddCourseBin extends HttpServlet {
 						pif.id = courseID;
 						pif.type = "adult";
 
-						Json += gson.toJson(pif) + ",";
+						s.data.add(pif);
 					} else {
 						Elements tds = row.select("td");
 						SessionInfo sf = new SessionInfo();
@@ -101,16 +100,41 @@ public class AddCourseBin extends HttpServlet {
 						sf.instructor = tds.get(6).text();
 						sf.location = tds.get(7).text();
 						sf.type = "child";
-						sf.parentId = courseID;
+						sf.parentId = courseID + "-" + sf.class_type;
 
-						Json += gson.toJson(sf) + ",";
+						if (hasLec == false && sf.class_type.equalsIgnoreCase("Lecture")) {
+							hasLec = true;
+							Category lec = new Category();
+							lec.id = courseID + "-" + sf.class_type;
+							lec.parentId = courseID;
+
+							s.data.add(lec);
+						} else if (hasDis == false && sf.class_type.equalsIgnoreCase("Discussion")) {
+							hasDis = true;
+							Category dis = new Category();
+							dis.id = courseID + "-" + sf.class_type;
+							dis.parentId = courseID;
+							s.data.add(dis);
+						} else if (hasQuiz == false && sf.class_type.equalsIgnoreCase("Quiz")) {
+							hasQuiz = true;
+							Category quiz = new Category();
+							quiz.id = courseID + "-" + sf.class_type;
+							quiz.parentId = courseID;
+							s.data.add(quiz);
+						} else if (hasLab == false && sf.class_type.equalsIgnoreCase("Lab")) {
+							hasLab = true;
+							Category lab = new Category();
+							lab.id = courseID + "-" + sf.class_type;
+							lab.parentId = courseID;
+							s.data.add(lab);
+						}
+
+						s.data.add(sf);
 					}
 				}
-				Json = Json.substring(0, Json.length() - 1);
-				Json = "[" + Json + "]";
-				response.getWriter().append(Json);
 			}
 		}
-		out.close();
+		Json.finishJson(e, s);
+		response.getWriter().append(Json.Json);
 	}
 }

@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import clsx from 'clsx';
 import MaterialTable from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Button, Paper, Box } from '@material-ui/core/';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { parseStateToCalEvents, parseStateToScores } from '../utils';
+import { parseStateToCalEvents, parseStateToScores, parseStatesToGenSchedule } from '../utils';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import CustomCalEvent from './CustomCalEvent';
 
@@ -19,16 +20,25 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column'
   },
   fixedHeight: {
-    height: 630
+    height: '80vh'
   }
 }));
 
 const mapDispatchToProps = dispatch => ({
-  onRowClick: selectedScheduleID => dispatch({ type: 'SET_SELECTED_ID', selectedScheduleID })
+  onRowClick: selectedScheduleID => dispatch({ type: 'SET_SELECTED_ID', selectedScheduleID }),
+  onGenSchedules: schedules => dispatch({ type: 'GEN_SCHEDULES', schedules })
 });
 
-function Schedule({ schedules, selectedScheduleID, onRowClick }) {
+function Schedule({
+  courses,
+  preferences,
+  schedules,
+  selectedScheduleID,
+  onRowClick,
+  onGenSchedules
+}) {
   const [selectedRow, setSelectedRow] = React.useState(1);
+  const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const localizer = momentLocalizer(moment);
@@ -41,9 +51,23 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
     return [];
   };
 
+  const handleZoomClick = () => {
+    setIsZoom(!isZoom);
+  };
+
   const handleScoresRowClick = (event, rowData) => {
     onRowClick(rowData.id);
     setSelectedRow(rowData.id);
+  };
+
+  const handleGeneSchedules = async () => {
+    axios
+      .post('api/GenerateSchedule', parseStatesToGenSchedule(courses, preferences))
+      .then(function({ data }) {
+        console.log(data);
+        onGenSchedules(data.results);
+      })
+      .finally(() => {});
   };
 
   return (
@@ -77,7 +101,7 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button color="primary" variant="contained" fullWidth>
+            <Button color="primary" variant="contained" fullWidth onClick={handleGeneSchedules}>
               Generate Schedules
             </Button>
           </Grid>
@@ -85,7 +109,12 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
       </Grid>
       <Grid item xs={12} md={6} lg={8}>
         <Paper className={fixedHeightPaper}>
-          <Grid container spacing={5} direction="row">
+          <Grid container spacing={4} direction="row">
+            <Grid item xs={4}>
+              <Button color="primary" variant="contained" fullWidth onClick={handleZoomClick}>
+                Zoom {!isZoom ? 'In' : 'Out'}
+              </Button>
+            </Grid>
             <Grid item xs={4}>
               <Button color="primary" variant="contained" fullWidth>
                 Save to History
@@ -96,11 +125,6 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
                 Export
               </Button>
             </Grid>
-            <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
-                Publish
-              </Button>
-            </Grid>
           </Grid>
           <Box mt={3}>
             <Calendar
@@ -109,12 +133,12 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
               views={['work_week']}
               defaultDate={new Date(moment('1880-10-06 00:00'))}
               events={getSelectedCalEvents()}
-              style={{ height: 530 }}
+              style={{ maxHeight: '65vh' }}
               toolbar={false}
               min={new Date('1880-10-06 08:00')}
               max={new Date('1880-10-06 20:00')}
               step={15}
-              timeslots={2}
+              timeslots={isZoom ? 2 : 4}
               components={{ event: CustomCalEvent }}
               formats={{ dayFormat: 'ddd' }}
             />
@@ -126,9 +150,15 @@ function Schedule({ schedules, selectedScheduleID, onRowClick }) {
 }
 
 Schedule.propTypes = {
+  courses: PropTypes.array.isRequired,
+  preferences: PropTypes.object.isRequired,
   schedules: PropTypes.array.isRequired,
   selectedScheduleID: PropTypes.number.isRequired,
-  onRowClick: PropTypes.func.isRequired
+  onRowClick: PropTypes.func.isRequired,
+  onGenSchedules: PropTypes.func.isRequired
 };
 
-export default connect(state => state.scheduleControl, mapDispatchToProps)(Schedule);
+export default connect(state => {
+  const { scheduleControl, coursebinControl, preferenceControl } = state;
+  return { ...scheduleControl, courses: coursebinControl.courses, preferences: preferenceControl };
+}, mapDispatchToProps)(Schedule);
