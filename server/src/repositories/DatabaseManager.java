@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import entity.Credential;
+
 public class DatabaseManager {
 	private static final String url = "jdbc:mysql://google/final_project?"
 			+ "cloudSqlInstance=usc-csci-201:us-central1:mysql-db"
@@ -62,5 +64,54 @@ public class DatabaseManager {
 			}
 		}
 		return recorded;
+	}
+	
+	public static Credential getHashAndSalt(String username) {
+		Credential credential= null;
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT * FROM Users WHERE username = ?";
+		
+		try {
+			conn = DriverManager.getConnection(url);
+			ps = conn.prepareStatement(querySearch);
+			ps.setString(1, username);
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				String usernameToMatch = rs.getString("username"); 
+				if (username.compareTo(usernameToMatch) == 0) {
+					credential = new Credential(rs.getString("hash"), rs.getString("salt"));
+				}
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		return credential;
 	}
 }
