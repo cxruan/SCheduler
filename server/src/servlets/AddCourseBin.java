@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-@WebServlet("/AddCourseBin")
+@WebServlet("/api/AddCourseBin")
 public class AddCourseBin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
