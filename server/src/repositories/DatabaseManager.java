@@ -114,4 +114,6 @@ public class DatabaseManager {
 		}
 		return credential;
 	}
+
+	public static void register(String username, String Hash, String salt) {}
 }
