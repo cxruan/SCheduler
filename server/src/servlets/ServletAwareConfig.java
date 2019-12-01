@@ -10,7 +10,8 @@ public class ServletAwareConfig extends ServerEndpointConfig.Configurator {
     @Override
     public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
         HttpSession httpSession = (HttpSession) request.getHttpSession();
-        config.getUserProperties().put("httpSession", httpSession);
+        if(httpSession != null)
+        	config.getUserProperties().put("httpSession", httpSession);
     }
 
 }

@@ -27,7 +27,7 @@ import javax.websocket.server.ServerEndpoint;
 public class WSEndpoint {
 	
     private Session websocketSession;
-    HttpSession httpSession;
+    HttpSession httpSession = null;
     private static Set<WSEndpoint> endpoints = new CopyOnWriteArraySet<WSEndpoint>();
     private static HashMap<String, String> users = new HashMap<>();
     
@@ -36,7 +36,10 @@ public class WSEndpoint {
     @OnOpen
     public void onOpen(Session websocketSession, EndpointConfig config) {
     	this.websocketSession = websocketSession;
-        this.httpSession = (HttpSession) config.getUserProperties().get("httpSession");
+    	if(config.getUserProperties().containsKey("httpSession"))
+    	{
+    		this.httpSession = (HttpSession) config.getUserProperties().get("httpSession");
+    	}
         endpoints.add(this);
         System.out.println(websocketSession.getId() + "Connected.");
     }
