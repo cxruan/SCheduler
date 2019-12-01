@@ -22,10 +22,6 @@ public class DatabaseManager {
 		}
 		return DriverManager.getConnection(url);
 	}
-//	"jdbc:mysql://google/final_project?"
-//			+ "cloudSqlInstance=usc-csci-201:us-central1:mysql-db"
-//			+ "&socketFactory=com.google.cloud.sql.mysql.SocketFactory"
-//			+ "&useSSL=false&user=final_project_shared&password=PxH7w8yaK!YWuG";
 
 	public DatabaseManager() {}
 
@@ -144,8 +140,6 @@ public class DatabaseManager {
 		String querySearch = "INSERT INTO Schedules (userId, public, content) VALUES ((SELECT userId from Users WHERE username=?), ?, ?)";
 		String queryPK = "SELECT LAST_INSERT_ID()";
 		
-		int rowsAffected = 0;
-		
 		try {
 			conn = getConnection();
 			ps1 = conn.prepareStatement(querySearch);
@@ -203,7 +197,6 @@ public class DatabaseManager {
 	public static int setPublic(String username, int scheduleId) {	
 		Connection conn = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
 		
 		String querySearch = "UPDATE Schedules SET public=true WHERE userId=(SELECT userId from Users WHERE username=?) AND scheduleId=?";
 		
