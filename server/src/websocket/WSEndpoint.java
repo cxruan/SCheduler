@@ -41,7 +41,12 @@ public class WSEndpoint {
 
     @OnMessage
     public void onMessage(String message) {
-    	String username = (String)httpSession.getAttribute("username");
+    	String username = null;
+    	if(httpSession != null) {
+    		username = (String)httpSession.getAttribute("username");
+    	}
+    	if(username == null)
+    		username = "admin";
     	if(username != null)
     	{
     		Schedule s = Schedule.fromJson(message);
@@ -52,20 +57,37 @@ public class WSEndpoint {
     			if(!s.inDatabase)
     			{
     				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
-    				bRes = new BroadcastResponse("BROADCAST", Integer.toString(pk));
+    				if(pk > 0)
+    				{
+    					bRes = new BroadcastResponse("SCHEDULE_ID", Integer.toString(pk));
+    				}
+    				else
+    				{
+    					sendMessage(new BroadcastResponse("ERROR", "cannot inset into table").toJson());
+    				}
     			}
     			else
     			{
-    				bRes = new BroadcastResponse("BROADCAST", Integer.toString(s.id));
+    				if(DatabaseManager.setPublic(username, s.id) > 0)
+    				{
+    					bRes = new BroadcastResponse("SCHEDULE_ID", Integer.toString(s.id));
+    				}
+    				else
+    				{
+    					sendMessage(new BroadcastResponse("ERROR", "wrong user or already published").toJson());
+    				}
     			}
-        		for(WSEndpoint wse : endpoints)
-                {
-        			if(!wse.equals(this))
-        			{
-                    	wse.sendMessage(bRes.toJson());	
-        			}
-                }
-        		sendMessage(new BroadcastResponse("OK", null).toJson()); 
+    			if(bRes != null)
+    			{
+            		for(WSEndpoint wse : endpoints)
+                    {
+            			if(!wse.equals(this))
+            			{
+                        	wse.sendMessage(bRes.toJson());	
+            			}
+                    }
+            		sendMessage(new BroadcastResponse("OK", null).toJson()); 
+    			}
     		}
     		else
     		{
