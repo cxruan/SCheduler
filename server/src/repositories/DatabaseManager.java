@@ -1,10 +1,66 @@
 package repositories;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class DatabaseManager {
-	String url;
+	private static final String url = "jdbc:mysql://google/final_project?"
+			+ "cloudSqlInstance=usc-csci-201:us-central1:mysql-db"
+			+ "&socketFactory=com.google.cloud.sql.mysql.SocketFactory"
+			+ "&useSSL=false&user=final_project_shared&password=PxH7w8yaK!YWuG";
 
-	public DatabaseManager(String url) {
-		this.url = url;
+	public DatabaseManager() {}
+
+	public static boolean validateUsername(String username) {
+		boolean recorded = false;
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT * FROM Users WHERE username = ?";
+		
+		try {
+			conn = DriverManager.getConnection(url);
+			ps = conn.prepareStatement(querySearch);
+			ps.setString(1, username);
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				String usernameToMatch = rs.getString("username"); 
+				if (username.compareTo(usernameToMatch) == 0) {
+					recorded = true;
+					break;
+				}
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		return recorded;
 	}
-
 }
