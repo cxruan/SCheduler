@@ -13,6 +13,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import entity.BroadcastResponse;
+import repositories.DatabaseManager;
+import scheduling.Schedule;
+
 // https://stackoverflow.com/questions/21888425/accessing-servletcontext-and-httpsession-in-onmessage-of-a-jsr-356-serverendpo
 
 @ServerEndpoint(value="/api/broadcast-schedules", configurator=ServletAwareConfig.class)
@@ -37,20 +41,41 @@ public class WSEndpoint {
 
     @OnMessage
     public void onMessage(String message) {
-    	if(httpSession.getAttribute("username") != null)
+    	String username = (String)httpSession.getAttribute("username");
+    	if(username != null)
     	{
-    		for(WSEndpoint wse : endpoints)
-            {
-    			if(!wse.equals(this))
+    		Schedule s = Schedule.fromJson(message);
+    		
+    		if(s != null && s.isValid())
+    		{
+    			BroadcastResponse bRes = null;
+    			if(!s.inDatabase)
     			{
-                	wse.sendMessage(message);	
+    				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
+    				bRes = new BroadcastResponse("BROADCAST", Integer.toString(pk));
     			}
-            }
-    		sendMessage("{\"status\":\"ok\"}"); 
+    			else
+    			{
+    				bRes = new BroadcastResponse("BROADCAST", Integer.toString(s.id));
+    			}
+        		for(WSEndpoint wse : endpoints)
+                {
+        			if(!wse.equals(this))
+        			{
+                    	wse.sendMessage(bRes.toJson());	
+        			}
+                }
+        		sendMessage(new BroadcastResponse("OK", null).toJson()); 
+    		}
+    		else
+    		{
+    			sendMessage(new BroadcastResponse("ERROR", "invalid request").toJson()); 
+    		}
+
     	}
     	else
     	{
-    		sendMessage("{\"status\":\"not logged in\"}"); 
+    		sendMessage(new BroadcastResponse("ERROR", "not logged in").toJson()); 
     	}      
     }
  

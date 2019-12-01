@@ -4,13 +4,18 @@ import java.lang.Comparable;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import scheduling.json.RequestJson;
+
 public class Schedule implements Comparable<Schedule> {
     
-    int id;
-    boolean inDatabase = false;
-    String scheduleName;
-    double total, early, late, breaks, reserved;
-    Section[] sections;
+    public int id;
+    public boolean inDatabase = false;
+    public String scheduleName;
+    public double total, early, late, breaks, reserved;
+    public Section[] sections;
 
     public Schedule(Section[] s) {
         sections = s.clone();
@@ -49,5 +54,30 @@ public class Schedule implements Comparable<Schedule> {
     
     public boolean isValid() {
     	return scheduleName != null && sections != null && sections.length > 0;
+    }
+    
+    static public Schedule fromJson(String json)
+	{
+		Gson gson = new Gson();
+		
+		Schedule data = null;
+		
+		try
+		{
+			data = gson.fromJson(json, Schedule.class);
+		}
+		catch(JsonSyntaxException jse)
+		{
+			jse.printStackTrace();
+			return null;
+		}
+		
+		return data;
+	}
+    
+    public String toJson()
+    {
+    	Gson gson = new Gson();
+    	return gson.toJson(this);
     }
 }
