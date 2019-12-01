@@ -44,3 +44,71 @@ export function parseStateToScores(schedules) {
     breaks: schedule.score.breaks
   }));
 }
+
+export function parseCourseToState(courses) {
+  return courses.map(course => ({ ...course, penalize: true, include: false }));
+}
+
+const weekdays = ['M', 'Tue', 'W', 'Thu', 'F'];
+
+function parseDaysToArray(days) {
+  const arr = [];
+  let i = 0;
+  while (i < 5) {
+    if (days.indexOf(weekdays[i]) >= 0) {
+      arr.push(i + 1);
+    }
+    i += 1;
+  }
+  return arr;
+}
+
+function parseTimeToObj(time) {
+  const split = time.indexOf('-');
+  let start = time2minutes(time.slice(0, split));
+  let end = time2minutes(time.slice(split + 1, -2));
+  if (time.slice(-2) === 'pm' && end < 720) {
+    start += 720;
+    end += 720;
+  }
+  if (start > end) {
+    start -= 720;
+  }
+  return { start, end };
+}
+
+function time2minutes(time) {
+  const split = time.indexOf(':');
+  return parseInt(time.slice(0, split), 10) * 60 + parseInt(time.slice(split + 1), 10);
+}
+
+export function parseStatesToGenSchedule(courses, preferences) {
+  const result = [];
+  const grands = courses.filter(node => node.type === 'adult');
+  grands.forEach(grand => {
+    const resultType = [];
+    const typeNodes = courses.filter(node => node.parentId === grand.id);
+    typeNodes.forEach(type => {
+      const resultCourse = courses
+        .filter(node => node.parentId === type.id && node.include)
+        .map(node => ({
+          name: grand.id,
+          ID: node.id,
+          type: node.class_type,
+          instructor: node.instructor,
+          location: node.location,
+          days: parseDaysToArray(node.days),
+          time: parseTimeToObj(node.time),
+          include: node.include,
+          penalize: node.penalize
+        }));
+      if (resultCourse.length > 0) {
+        resultType.push({ name: type.id, elements: resultCourse });
+      }
+    });
+    if (resultType.length > 0) {
+      result.push({ name: grand.id, elements: resultType });
+    }
+  });
+  return { courses: result, preferences };
+}
