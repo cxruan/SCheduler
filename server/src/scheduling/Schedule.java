@@ -8,20 +8,20 @@ public class Schedule implements Comparable<Schedule> {
     
     int id;
     String scheduleName;
-    double score;    
+    double total, early, late, breaks, reserved;
     Section[] sections;
 
     public Schedule(Section[] s) {
         sections = s.clone();
-        score = 0;
+        total = early = late = breaks = reserved = 0;
     }
 
     @Override
     public int compareTo(Schedule rhs) {
-        if (score == rhs.score) {
+        if (total == rhs.total) {
             return hashCode() - rhs.hashCode();
         } else {
-            return (int) ((rhs.score - score) * 1000);
+            return (int) ((rhs.total - total) * 1000);
         }
     }
 
