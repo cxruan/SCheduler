@@ -13,7 +13,7 @@ import scheduling.Scheduler;
 /**
  * Servlet implementation class Schedule
  */
-@WebServlet("/Schedule")
+@WebServlet("/api/GenerateSchedule")
 public class Schedule extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
