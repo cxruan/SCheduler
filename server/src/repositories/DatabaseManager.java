@@ -128,8 +128,39 @@ public class DatabaseManager {
 		return credential;
 	}
 
-	public static void register(String username, String Hash, String salt) {}
-	
+	public static void register(String username, String hash, String salt) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+
+		String registerQuery = "INSERT INTO Users (username, hash, salt) VALUES (?, ?, ?)";
+
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(querySearch);
+			ps.setString(1, username);
+			ps.setString(2, hash);
+			ps.setString(3, salt);
+			ps.executeUpdate();
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			if(ps != null) {
+				try{
+					ps.close();
+				} catch(SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch(SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+	}	
 	
 	// return PrimaryKey if insert is successful, -1 otherwise.
 	public static int addSchedule(String username, String schedule, boolean isPublic) {	
