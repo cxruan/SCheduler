@@ -119,3 +119,11 @@ export function parseStateToHistory(schedules) {
     scheduleName: schedule.scheduleName
   }));
 }
+
+export function parseStateToCommunity(schedules) {
+  return schedules.map(schedule => ({
+    id: schedule.id,
+    scheduleName: schedule.scheduleName,
+    username: schedule.username
+  }));
+}

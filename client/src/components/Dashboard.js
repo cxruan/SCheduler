@@ -30,7 +30,6 @@ import HistoryIcon from '@material-ui/icons/History';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HelpIcon from '@material-ui/icons/Help';
-import { withSnackbar } from 'notistack';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
 import Tab from './Tab';
@@ -141,7 +140,6 @@ function Dashboard({
   onTabClick,
   onDrawerClick,
   onLoginClick,
-  enqueueSnackbar,
   user,
   onLogOut
 }) {
@@ -150,13 +148,6 @@ function Dashboard({
 
   const handleDrawerOpen = () => {
     onDrawerClick(true);
-    enqueueSnackbar('Jack just published his schedule!', {
-      variant: 'info',
-      anchorOrigin: {
-        vertical: 'bottom',
-        horizontal: 'right'
-      }
-    });
   };
   const handleDrawerClose = () => {
     onDrawerClick(false);
@@ -310,7 +301,6 @@ Dashboard.propTypes = {
   onTabClick: PropTypes.func.isRequired,
   onDrawerClick: PropTypes.func.isRequired,
   onLoginClick: PropTypes.func.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   onLogOut: PropTypes.func.isRequired
 };
@@ -318,4 +308,4 @@ Dashboard.propTypes = {
 export default connect(
   state => ({ ...state.tabsControl, user: state.userControl }),
   mapDispatchToProps
-)(withSnackbar(Dashboard));
+)(Dashboard);

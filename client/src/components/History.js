@@ -32,17 +32,27 @@ const mapDispatchToProps = dispatch => ({
 
 function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   const [isZoom, setIsZoom] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const localizer = momentLocalizer(moment);
 
   React.useEffect(() => {
-    axios.get('/api/history').then(function({ data }) {
-      if (!data.error) {
-        onHistoryGet(data.results);
-      }
-    });
-  }, []);
+    setIsLoading(true);
+    axios
+      .get('/api/history')
+      .then(function({ data }) {
+        if (!data.error) {
+          onHistoryGet(data.results);
+          if (data.results.length > 0) {
+            onRowClick(data.results[data.results.length - 1].id);
+          }
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [onHistoryGet]);
 
   const handleZoomClick = () => {
     setIsZoom(!isZoom);
@@ -60,20 +70,25 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
     onRowClick(rowData.id);
   };
 
+  // const handlePublish = () => {
+  //   socket.send({ id: selectedScheduleID });
+  // };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={5} direction="column">
           <Grid item xs={12}>
             <MaterialTable
+              isLoading={isLoading}
               data={parseStateToHistory(schedules)}
               columns={[
-                { title: 'Schedule', field: 'id' },
-                { title: 'Schedule Name', field: 'scheduleName' }
+                { title: 'Id', field: 'id', defaultSort: 'asc' },
+                { title: 'Schedule Name', field: 'scheduleName', defaultSort: 'asc' }
               ]}
               options={{
                 search: false,
-                sorting: false,
+                sorting: true,
                 selection: false,
                 pageSize: 13,
                 pageSizeOptions: [],
@@ -138,4 +153,7 @@ History.propTypes = {
   onHistoryGet: PropTypes.func.isRequired
 };
 
-export default connect(state => state.historyControl, mapDispatchToProps)(History);
+export default connect(
+  state => ({ ...state.historyControl, socket: state.userControl.socket }),
+  mapDispatchToProps
+)(History);

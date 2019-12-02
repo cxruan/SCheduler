@@ -11,6 +11,7 @@ import moment from 'moment';
 import { parseStateToCalEvents, parseStateToScores, parseStatesToGenSchedule } from '../utils';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import CustomCalEvent from './CustomCalEvent';
+import SaveToHistoryDialog from './SaveToHistoryDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -26,7 +27,8 @@ const useStyles = makeStyles(theme => ({
 
 const mapDispatchToProps = dispatch => ({
   onRowClick: selectedScheduleID => dispatch({ type: 'SET_SELECTED_ID', selectedScheduleID }),
-  onGenSchedules: schedules => dispatch({ type: 'GEN_SCHEDULES', schedules })
+  onGenSchedules: schedules => dispatch({ type: 'GEN_SCHEDULES', schedules }),
+  onDialogClick: openDialog => dispatch({ type: 'TOGGLE_SAVE_TO_HISTORY', openDialog })
 });
 
 function Schedule({
@@ -35,7 +37,9 @@ function Schedule({
   schedules,
   selectedScheduleID,
   onRowClick,
-  onGenSchedules
+  onGenSchedules,
+  user,
+  onDialogClick
 }) {
   const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
@@ -68,6 +72,10 @@ function Schedule({
       .finally(() => {});
   };
 
+  const handleDialogOpen = () => {
+    onDialogClick(true);
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={6} lg={4}>
@@ -76,7 +84,7 @@ function Schedule({
             <MaterialTable
               data={parseStateToScores(schedules)}
               columns={[
-                { title: 'Schedule', field: 'id', defaultSort: 'asc' },
+                { title: 'Id', field: 'id', defaultSort: 'asc' },
                 { title: 'Total', field: 'total', defaultSort: 'asc' },
                 { title: 'Early', field: 'early', defaultSort: 'asc' },
                 { title: 'Late', field: 'late', defaultSort: 'asc' },
@@ -115,9 +123,19 @@ function Schedule({
               </Button>
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                disabled={
+                  !user.status ||
+                  schedules.find(schedule => schedule.id === selectedScheduleID) === undefined
+                }
+                onClick={handleDialogOpen}
+              >
                 Save to History
               </Button>
+              <SaveToHistoryDialog />
             </Grid>
             <Grid item xs={4}>
               <Button color="primary" variant="contained" fullWidth>
@@ -154,10 +172,17 @@ Schedule.propTypes = {
   schedules: PropTypes.array.isRequired,
   selectedScheduleID: PropTypes.number.isRequired,
   onRowClick: PropTypes.func.isRequired,
-  onGenSchedules: PropTypes.func.isRequired
+  onGenSchedules: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  onDialogClick: PropTypes.func.isRequired
 };
 
 export default connect(state => {
-  const { scheduleControl, coursebinControl, preferenceControl } = state;
-  return { ...scheduleControl, courses: coursebinControl.courses, preferences: preferenceControl };
+  const { scheduleControl, coursebinControl, preferenceControl, userControl } = state;
+  return {
+    ...scheduleControl,
+    courses: coursebinControl.courses,
+    preferences: preferenceControl,
+    user: userControl
+  };
 }, mapDispatchToProps)(Schedule);

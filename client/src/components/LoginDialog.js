@@ -1,15 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
+import {
+  Avatar,
+  Typography,
+  CssBaseline,
+  TextField,
+  Button,
+  Container,
+  Dialog
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Dialog from '@material-ui/core/Dialog';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { withSnackbar } from 'notistack';
 import axios from 'axios';
 

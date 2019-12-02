@@ -4,6 +4,7 @@ import coursebinControl from './coursebinControl';
 import preferenceControl from './preferenceControl';
 import scheduleControl from './scheduleControl';
 import historyControl from './historyControl';
+import communityControl from './communityControl';
 import userControl from './userControl';
 
 export default combineReducers({
@@ -12,5 +13,6 @@ export default combineReducers({
   preferenceControl,
   scheduleControl,
   historyControl,
+  communityControl,
   userControl
 });
