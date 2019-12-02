@@ -38,7 +38,6 @@ public class GetHistory extends HttpServlet {
 		}
 		else
 		{
-			username = "admin";
 			response.getWriter().print(DatabaseManager.getHistory(username).toJson());
 		}
 	}
