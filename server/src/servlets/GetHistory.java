@@ -34,11 +34,11 @@ public class GetHistory extends HttpServlet {
 		{
 			SchedulingResponse res = new SchedulingResponse();
 			res.error = "not logged in";
-			response.getWriter().print(res.toJson());
+			response.getWriter().append(res.toJson());
 		}
 		else
 		{
-			response.getWriter().print(DatabaseManager.getHistory(username).toJson());
+			response.getWriter().append(DatabaseManager.getHistory(username).toJson());
 		}
 	}
 

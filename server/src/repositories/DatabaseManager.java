@@ -13,7 +13,8 @@ import scheduling.json.SchedulingResponse;
 
 public class DatabaseManager {
 	private static String url = null;
-	
+	 
+	// set the Environment Varible CS201_FINAL_PROJECT_DB_URL to the correct SQL url
 	private static Connection getConnection() throws SQLException, UrlNotSetException {
 		if(url == null)
 		{
