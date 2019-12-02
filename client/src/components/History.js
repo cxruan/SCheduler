@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import clsx from 'clsx';
 import MaterialTable from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
+import { Grid, Paper, Button, Box } from '@material-ui/core';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import CustomCalEvent from './CustomCalEvent';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { parseStateToCalEvents, parseStateToHistory } from '../utils';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -15,13 +19,39 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column'
   },
   fixedHeight: {
-    height: 630
+    height: '80vh'
   }
 }));
 
-function History() {
+const mapDispatchToProps = dispatch => ({
+  onRowClick: selectedScheduleID =>
+    dispatch({ type: 'SET_HISTORY_SELECTED_ID', selectedScheduleID })
+});
+
+function History({ schedules, selectedScheduleID, onRowClick }) {
+  console.log(schedules);
+  const [selectedRow, setSelectedRow] = React.useState(1);
+  const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const localizer = momentLocalizer(moment);
+
+  const handleZoomClick = () => {
+    setIsZoom(!isZoom);
+  };
+
+  const getSelectedCalEvents = () => {
+    const selected = schedules.find(schedule => schedule.id === selectedScheduleID);
+    if (selected) {
+      return parseStateToCalEvents(selected.sections);
+    }
+    return [];
+  };
+
+  const handleHistoryRowClick = (event, rowData) => {
+    onRowClick(rowData.id);
+    setSelectedRow(rowData.id);
+  };
 
   return (
     <Grid container spacing={3}>
@@ -29,23 +59,10 @@ function History() {
         <Grid container spacing={5} direction="column">
           <Grid item xs={12}>
             <MaterialTable
-              data={[
-                {
-                  id: 1,
-                  name: 'my schedule 1'
-                },
-                {
-                  id: 2,
-                  name: 'my schedule 2'
-                },
-                {
-                  id: 3,
-                  name: 'my schedule 3'
-                }
-              ]}
+              data={parseStateToHistory(schedules)}
               columns={[
                 { title: 'Schedule', field: 'id' },
-                { title: 'Schedule Name', field: 'name' }
+                { title: 'Schedule Name', field: 'scheduleName' }
               ]}
               options={{
                 search: false,
@@ -53,17 +70,13 @@ function History() {
                 selection: false,
                 pageSize: 13,
                 pageSizeOptions: [],
-                padding: 'dense'
+                padding: 'dense',
+                rowStyle: rowData => ({
+                  backgroundColor: selectedRow !== 0 && selectedRow === rowData.id ? '#EEE' : '#FFF'
+                })
               }}
               title="History"
-              editable={{
-                onRowDelete: () =>
-                  new Promise(resolve => {
-                    setTimeout(() => {
-                      resolve();
-                    }, 1000);
-                  })
-              }}
+              onRowClick={handleHistoryRowClick}
             />
           </Grid>
         </Grid>
@@ -71,21 +84,49 @@ function History() {
       <Grid item xs={12} md={6} lg={8}>
         <Paper className={fixedHeightPaper}>
           <Grid container spacing={5} direction="row" justify="center">
-            <Grid item xs={6}>
+            <Grid item xs={4}>
+              <Button color="primary" variant="contained" fullWidth onClick={handleZoomClick}>
+                Zoom {!isZoom ? 'In' : 'Out'}
+              </Button>
+            </Grid>
+            <Grid item xs={4}>
               <Button color="primary" variant="contained" fullWidth>
                 Export
               </Button>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <Button color="primary" variant="contained" fullWidth>
                 Publish
               </Button>
             </Grid>
           </Grid>
+          <Box mt={3}>
+            <Calendar
+              localizer={localizer}
+              defaultView="work_week"
+              views={['work_week']}
+              defaultDate={new Date(moment('1880-10-06 00:00'))}
+              events={getSelectedCalEvents()}
+              style={{ maxHeight: '65vh' }}
+              toolbar={false}
+              min={new Date('1880-10-06 08:00')}
+              max={new Date('1880-10-06 20:00')}
+              step={15}
+              timeslots={isZoom ? 2 : 4}
+              components={{ event: CustomCalEvent }}
+              formats={{ dayFormat: 'ddd' }}
+            />
+          </Box>
         </Paper>
       </Grid>
     </Grid>
   );
 }
 
-export default History;
+History.propTypes = {
+  schedules: PropTypes.array.isRequired,
+  selectedScheduleID: PropTypes.number.isRequired,
+  onRowClick: PropTypes.func.isRequired
+};
+
+export default connect(state => state.historyControl, mapDispatchToProps)(History);

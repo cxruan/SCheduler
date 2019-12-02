@@ -37,11 +37,11 @@ export function parseStateToCalEvents(sections) {
 export function parseStateToScores(schedules) {
   return schedules.map(schedule => ({
     id: schedule.id,
-    total: schedule.score.total,
-    early: schedule.score.early,
-    late: schedule.score.late,
-    interval: schedule.score.interval,
-    breaks: schedule.score.breaks
+    total: schedule.total,
+    early: schedule.early,
+    late: schedule.late,
+    breaks: schedule.breaks,
+    reserved: schedule.reserved
   }));
 }
 
@@ -111,4 +111,11 @@ export function parseStatesToGenSchedule(courses, preferences) {
     }
   });
   return { courses: result, preferences };
+}
+
+export function parseStateToHistory(schedules) {
+  return schedules.map(schedule => ({
+    id: schedule.id,
+    scheduleName: schedule.scheduleName
+  }));
 }

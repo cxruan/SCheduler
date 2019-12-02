@@ -118,7 +118,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love getting up early.
+                    I hate getting up early.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -167,7 +167,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love getting home late.
+                    I hate getting home late.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -215,7 +215,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love long breaks between classes.
+                    I hate long breaks between classes.
                   </Typography>
                 </Grid>
                 <Grid item>

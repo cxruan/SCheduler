@@ -13,7 +13,7 @@ import scheduling.json.SchedulingResponse;
 /**
  * Servlet implementation class GetHistory
  */
-@WebServlet("/api/schedule-history")
+@WebServlet("/api/History")
 public class GetHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

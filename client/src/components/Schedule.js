@@ -78,16 +78,16 @@ function Schedule({
             <MaterialTable
               data={parseStateToScores(schedules)}
               columns={[
-                { title: 'Schedule', field: 'id' },
-                { title: 'Total', field: 'total' },
-                { title: 'Early', field: 'early' },
-                { title: 'Late', field: 'late' },
-                { title: 'Interval', field: 'interval' },
-                { title: 'Breaks', field: 'breaks' }
+                { title: 'Schedule', field: 'id', defaultSort: 'asc' },
+                { title: 'Total', field: 'total', defaultSort: 'asc' },
+                { title: 'Early', field: 'early', defaultSort: 'asc' },
+                { title: 'Late', field: 'late', defaultSort: 'asc' },
+                { title: 'Breaks', field: 'breaks', defaultSort: 'asc' },
+                { title: 'Reserved', field: 'reserved', defaultSort: 'asc' }
               ]}
               options={{
                 search: false,
-                sorting: false,
+                sorting: true,
                 selection: false,
                 pageSize: 10,
                 pageSizeOptions: [],
