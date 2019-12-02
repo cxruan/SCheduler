@@ -37,7 +37,7 @@ public class SaveSchedule extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = (String)request.getAttribute("username");
+		String username = (String)request.getSession().getAttribute("username");
 		if(username == null)
 		{
 			response.getWriter().print(new JsonResponse("error", "not logged in").toJson());

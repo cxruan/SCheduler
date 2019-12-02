@@ -14,8 +14,12 @@ import {
   IconButton,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  ListItemSecondaryAction,
+  Tooltip,
+  Avatar
 } from '@material-ui/core';
+import { purple } from '@material-ui/core/colors';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -24,6 +28,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PeopleIcon from '@material-ui/icons/People';
 import HistoryIcon from '@material-ui/icons/History';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import HelpIcon from '@material-ui/icons/Help';
 import { withSnackbar } from 'notistack';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
@@ -108,13 +114,24 @@ const useStyles = makeStyles(theme => ({
   },
   fixedHeight: {
     height: 480
+  },
+  purple: {
+    color: '#fff',
+    backgroundColor: purple[500]
+  }
+}));
+
+const useTooltipStyles = makeStyles(() => ({
+  tooltip: {
+    fontSize: 15
   }
 }));
 
 const mapDispatchToProps = dispatch => ({
   onTabClick: (tabId, tabName) => dispatch({ type: 'CHANGE_TAB', tabId, tabName }),
   onDrawerClick: openDrawer => dispatch({ type: 'TOGGLE_DRAWER', openDrawer }),
-  onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin })
+  onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin }),
+  onLogOut: () => dispatch({ type: 'USER_LOGOUT' })
 });
 
 function Dashboard({
@@ -124,9 +141,13 @@ function Dashboard({
   onTabClick,
   onDrawerClick,
   onLoginClick,
-  enqueueSnackbar
+  enqueueSnackbar,
+  user,
+  onLogOut
 }) {
   const classes = useStyles();
+  const tooltipClasses = useTooltipStyles();
+
   const handleDrawerOpen = () => {
     onDrawerClick(true);
     enqueueSnackbar('Jack just published his schedule!', {
@@ -169,9 +190,24 @@ function Dashboard({
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {tabName}
           </Typography>
-          <IconButton color="inherit" onClick={handleLoginOpen}>
-            <AccountCircleIcon />
-          </IconButton>
+          {user.status && (
+            <Tooltip title={user.username} classes={tooltipClasses}>
+              <Avatar className={classes.purple}>{user.username[0]}</Avatar>
+            </Tooltip>
+          )}
+          {user.status ? (
+            <Tooltip title="Log Out" classes={tooltipClasses}>
+              <IconButton color="inherit" onClick={onLogOut}>
+                <ExitToAppIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title="Sign In" classes={tooltipClasses}>
+              <IconButton color="inherit" onClick={handleLoginOpen}>
+                <AccountCircleIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -226,6 +262,7 @@ function Dashboard({
           </ListItem>
           <ListItem
             button
+            disabled={!user.status}
             selected={tabId === TABS.HISTORY}
             onClick={() => {
               handleTabClick(TABS.HISTORY, 'History');
@@ -235,6 +272,15 @@ function Dashboard({
               <HistoryIcon />
             </ListItemIcon>
             <ListItemText primary="History" />
+            {!user.status && (
+              <ListItemSecondaryAction>
+                <Tooltip title="Please log in to use History." classes={tooltipClasses}>
+                  <IconButton>
+                    <HelpIcon />
+                  </IconButton>
+                </Tooltip>
+              </ListItemSecondaryAction>
+            )}
           </ListItem>
           <ListItem
             button
@@ -264,7 +310,12 @@ Dashboard.propTypes = {
   onTabClick: PropTypes.func.isRequired,
   onDrawerClick: PropTypes.func.isRequired,
   onLoginClick: PropTypes.func.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+  onLogOut: PropTypes.func.isRequired
 };
 
-export default connect(state => state.tabsControl, mapDispatchToProps)(withSnackbar(Dashboard));
+export default connect(
+  state => ({ ...state.tabsControl, user: state.userControl }),
+  mapDispatchToProps
+)(withSnackbar(Dashboard));

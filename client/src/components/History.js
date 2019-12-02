@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper, Button, Box } from '@material-ui/core';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import axios from 'axios';
 import CustomCalEvent from './CustomCalEvent';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { parseStateToCalEvents, parseStateToHistory } from '../utils';
@@ -25,15 +26,23 @@ const useStyles = makeStyles(theme => ({
 
 const mapDispatchToProps = dispatch => ({
   onRowClick: selectedScheduleID =>
-    dispatch({ type: 'SET_HISTORY_SELECTED_ID', selectedScheduleID })
+    dispatch({ type: 'SET_HISTORY_SELECTED_ID', selectedScheduleID }),
+  onHistoryGet: schedules => dispatch({ type: 'GET_HISTORY_SCHEDULES', schedules })
 });
 
-function History({ schedules, selectedScheduleID, onRowClick }) {
-  console.log(schedules);
+function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const localizer = momentLocalizer(moment);
+
+  React.useEffect(() => {
+    axios.get('/api/history').then(function({ data }) {
+      if (!data.error) {
+        onHistoryGet(data.results);
+      }
+    });
+  }, []);
 
   const handleZoomClick = () => {
     setIsZoom(!isZoom);
@@ -125,7 +134,8 @@ function History({ schedules, selectedScheduleID, onRowClick }) {
 History.propTypes = {
   schedules: PropTypes.array.isRequired,
   selectedScheduleID: PropTypes.number.isRequired,
-  onRowClick: PropTypes.func.isRequired
+  onRowClick: PropTypes.func.isRequired,
+  onHistoryGet: PropTypes.func.isRequired
 };
 
 export default connect(state => state.historyControl, mapDispatchToProps)(History);

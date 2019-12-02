@@ -10,6 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
+import { withSnackbar } from 'notistack';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -21,15 +23,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: 350
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
   },
   button: {
     margin: theme.spacing(3, 0, 2)
@@ -38,10 +37,13 @@ const useStyles = makeStyles(theme => ({
 
 const mapDispatchToProps = dispatch => ({
   onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin }),
-  onRegisterClick: openRegister => dispatch({ type: 'TOGGLE_REGISTER', openRegister })
+  onRegisterClick: openRegister => dispatch({ type: 'TOGGLE_REGISTER', openRegister }),
+  onLogIn: username => dispatch({ type: 'USER_LOGIN', username })
 });
 
-function LoginDialog({ openLogin, onLoginClick, onRegisterClick }) {
+function LoginDialog({ openLogin, onLoginClick, onRegisterClick, onLogIn, enqueueSnackbar }) {
+  const [values, setValues] = React.useState({ username: '', password: '' });
+  const [errorMsg, setErrorMsg] = React.useState('');
   const classes = useStyles();
 
   const handleLoginClose = () => {
@@ -51,6 +53,41 @@ function LoginDialog({ openLogin, onLoginClick, onRegisterClick }) {
   const handleRegisterOpen = () => {
     onLoginClick(false);
     onRegisterClick(true);
+  };
+
+  const handleValueChange = event => {
+    const { name, value } = event.target;
+    setValues(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleLoginSubmit = async () => {
+    axios
+      .get('/api/login', {
+        params: {
+          username: values.username,
+          password: values.password
+        }
+      })
+      .then(function({ data }) {
+        if (data.type === 'error') {
+          setErrorMsg(data.message);
+        } else if (data.type === 'ok') {
+          onLogIn(values.username);
+          setValues({ username: '', password: '' });
+          setErrorMsg('');
+          handleLoginClose();
+          enqueueSnackbar('Successfully log in!', {
+            variant: 'info',
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right'
+            }
+          });
+        }
+      });
   };
 
   return (
@@ -64,40 +101,46 @@ function LoginDialog({ openLogin, onLoginClick, onRegisterClick }) {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.button}
-            >
-              Sign In
-            </Button>
-            <Button fullWidth className={classes.button} onClick={handleRegisterOpen}>
-              Don&apos;t have an account? Sign Up
-            </Button>
-          </form>
+          <TextField
+            error={Boolean(errorMsg)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            value={values.username}
+            onChange={handleValueChange}
+            autoFocus
+          />
+          <TextField
+            error={Boolean(errorMsg)}
+            helperText={errorMsg}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            value={values.password}
+            onChange={handleValueChange}
+            label="Password"
+            type="password"
+            id="password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={handleLoginSubmit}
+          >
+            Sign In
+          </Button>
+          <Button fullWidth className={classes.button} onClick={handleRegisterOpen}>
+            Don&apos;t have an account? Sign Up
+          </Button>
         </div>
       </Container>
     </Dialog>
@@ -107,7 +150,9 @@ function LoginDialog({ openLogin, onLoginClick, onRegisterClick }) {
 LoginDialog.propTypes = {
   openLogin: PropTypes.bool.isRequired,
   onLoginClick: PropTypes.func.isRequired,
-  onRegisterClick: PropTypes.func.isRequired
+  onRegisterClick: PropTypes.func.isRequired,
+  onLogIn: PropTypes.func.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default connect(state => state.tabsControl, mapDispatchToProps)(LoginDialog);
+export default connect(state => state.tabsControl, mapDispatchToProps)(withSnackbar(LoginDialog));

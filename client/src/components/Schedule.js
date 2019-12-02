@@ -60,7 +60,7 @@ function Schedule({
 
   const handleGeneSchedules = async () => {
     axios
-      .post('api/GenerateSchedule', parseStatesToGenSchedule(courses, preferences))
+      .post('api/generate-schedule', parseStatesToGenSchedule(courses, preferences))
       .then(function({ data }) {
         console.log(data);
         onGenSchedules(data.results);

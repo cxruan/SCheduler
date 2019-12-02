@@ -1,48 +1,5 @@
 const initialState = {
-  schedules: [
-    {
-      id: 1,
-      scheduleName: 'abc',
-      inDatabase: false,
-      sections: [
-        {
-          name: 'MATH-407',
-          ID: '39981R',
-          type: 'Lecture',
-          instructor: 'Jason Fulman',
-          location: 'THH114',
-          time: {
-            start: 780,
-            end: 890
-          },
-          days: [1, 3, 5],
-          include: true,
-          penalize: true
-        }
-      ]
-    },
-    {
-      id: 2,
-      scheduleName: 'abcd',
-      inDatabase: false,
-      sections: [
-        {
-          name: 'MATH-407',
-          ID: '39981R',
-          type: 'Lecture',
-          instructor: 'Jason Fulman',
-          location: 'THH114',
-          time: {
-            start: 780,
-            end: 830
-          },
-          days: [2, 4],
-          include: true,
-          penalize: true
-        }
-      ]
-    }
-  ],
+  schedules: [],
   selectedScheduleID: 1
 };
 

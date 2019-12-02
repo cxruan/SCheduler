@@ -33,12 +33,12 @@ public class UserValidation extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 
-		if (username.isEmpty()) {
+		if (username == null || username.isEmpty()) {
 			response.getWriter().append(new JsonResponse("error", "Username cannot be blank.").toJson());
 			return;
 		}
 
-		if (password.isEmpty()) {
+		if (username == null || password.isEmpty()) {
 			response.getWriter().append(new JsonResponse("error", "Password cannot be blank.").toJson());
 			return;
 		}
