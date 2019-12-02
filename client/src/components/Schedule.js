@@ -37,7 +37,6 @@ function Schedule({
   onRowClick,
   onGenSchedules
 }) {
-  const [selectedRow, setSelectedRow] = React.useState(1);
   const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -57,7 +56,6 @@ function Schedule({
 
   const handleScoresRowClick = (event, rowData) => {
     onRowClick(rowData.id);
-    setSelectedRow(rowData.id);
   };
 
   const handleGeneSchedules = async () => {
@@ -93,7 +91,8 @@ function Schedule({
                 pageSizeOptions: [],
                 padding: 'dense',
                 rowStyle: rowData => ({
-                  backgroundColor: selectedRow !== 0 && selectedRow === rowData.id ? '#EEE' : '#FFF'
+                  backgroundColor:
+                    selectedScheduleID !== 0 && selectedScheduleID === rowData.id ? '#EEE' : '#FFF'
                 })
               }}
               title="Scores"

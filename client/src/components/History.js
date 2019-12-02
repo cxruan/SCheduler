@@ -30,7 +30,6 @@ const mapDispatchToProps = dispatch => ({
 
 function History({ schedules, selectedScheduleID, onRowClick }) {
   console.log(schedules);
-  const [selectedRow, setSelectedRow] = React.useState(1);
   const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -50,7 +49,6 @@ function History({ schedules, selectedScheduleID, onRowClick }) {
 
   const handleHistoryRowClick = (event, rowData) => {
     onRowClick(rowData.id);
-    setSelectedRow(rowData.id);
   };
 
   return (
@@ -72,7 +70,8 @@ function History({ schedules, selectedScheduleID, onRowClick }) {
                 pageSizeOptions: [],
                 padding: 'dense',
                 rowStyle: rowData => ({
-                  backgroundColor: selectedRow !== 0 && selectedRow === rowData.id ? '#EEE' : '#FFF'
+                  backgroundColor:
+                    selectedScheduleID !== 0 && selectedScheduleID === rowData.id ? '#EEE' : '#FFF'
                 })
               }}
               title="History"
