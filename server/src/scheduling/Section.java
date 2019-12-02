@@ -7,4 +7,11 @@ public class Section {
     public TimeRange time;
     public Set<Integer> days;
     public boolean include, penalize;
+    
+    public boolean isValid()
+    {
+    	return name != null && ID != null && type != null && 
+    			(time == null || time.start <= time.end) &&
+    			days != null;
+    }
 }

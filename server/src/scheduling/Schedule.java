@@ -54,7 +54,18 @@ public class Schedule implements Comparable<Schedule> {
     }
     
     public boolean isValid() {
-    	return scheduleName != null && sections != null && sections.length > 0;
+    	if(!(scheduleName != null && sections != null && sections.length > 0))
+    	{
+    		return false;
+    	}
+    	for(Section s : sections)
+    	{
+    		if(!s.isValid())
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
     }
     
     static public Schedule fromJson(String json)
