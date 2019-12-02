@@ -12,7 +12,6 @@ class BreakEvaluator implements Evaluator {
         reserved = r;
     }
 
-    @Override
     public double evaluate(Schedule s) {
         TimeRange[][] timeTable = s.getTimeTable();
         double cost = 0;
