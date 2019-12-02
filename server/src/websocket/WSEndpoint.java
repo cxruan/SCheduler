@@ -13,7 +13,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import entity.BroadcastResponse;
+import entity.JsonResponse;
 import repositories.DatabaseManager;
 import scheduling.Schedule;
 
@@ -51,28 +51,28 @@ public class WSEndpoint {
     		
     		if(s != null && s.isValid())
     		{
-    			BroadcastResponse bRes = null;
+    			JsonResponse bRes = null;
     			if(!s.inDatabase)
     			{
     				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
     				if(pk > 0)
     				{
-    					bRes = new BroadcastResponse("scheduleID", Integer.toString(pk));
+    					bRes = new JsonResponse("scheduleID", Integer.toString(pk));
     				}
     				else
     				{
-    					sendMessage(new BroadcastResponse("error", "cannot inset into table").toJson());
+    					sendMessage(new JsonResponse("error", "cannot inset into table").toJson());
     				}
     			}
     			else
     			{
     				if(DatabaseManager.setPublic(username, s.id) > 0)
     				{
-    					bRes = new BroadcastResponse("scheduleID", Integer.toString(s.id));
+    					bRes = new JsonResponse("scheduleID", Integer.toString(s.id));
     				}
     				else
     				{
-    					sendMessage(new BroadcastResponse("error", "username does not match").toJson());
+    					sendMessage(new JsonResponse("error", "username does not match").toJson());
     				}
     			}
     			if(bRes != null)
@@ -84,18 +84,18 @@ public class WSEndpoint {
                         	wse.sendMessage(bRes.toJson());	
             			}
                     }
-            		sendMessage(new BroadcastResponse("ok", null).toJson()); 
+            		sendMessage(new JsonResponse("ok", null).toJson()); 
     			}
     		}
     		else
     		{
-    			sendMessage(new BroadcastResponse("error", "invalid request").toJson()); 
+    			sendMessage(new JsonResponse("error", "invalid request").toJson()); 
     		}
 
     	}
     	else
     	{
-    		sendMessage(new BroadcastResponse("error", "not logged in").toJson()); 
+    		sendMessage(new JsonResponse("error", "not logged in").toJson()); 
     	}      
     }
  
