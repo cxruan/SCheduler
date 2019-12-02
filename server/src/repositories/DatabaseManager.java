@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import entity.Credential;
+import projectConfig.ProjectConfig;
 import scheduling.Schedule;
 import scheduling.json.SchedulingResponse;
 
@@ -376,18 +377,21 @@ public class DatabaseManager {
 		return res;
 	}
 	
+	static final private int PUBLIC_SCHEDULE_LIMIT = ProjectConfig.getPublicScheduleLimit();
+	
 	public static SchedulingResponse getPublicSchedules() {	
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
-		String querySearch = "SELECT s.content, s.scheduleId, u.username FROM Schedules s, Users u WHERE s.public=true AND s.userId=u.userId";
+		String querySearch = "SELECT s.content, s.scheduleId, u.username FROM Schedules s, Users u WHERE s.public=true AND s.userId=u.userId ORDER BY timestamp DESC LIMIT ?";
 		
 		SchedulingResponse res = new SchedulingResponse();
 		
 		try {		
 			conn = getConnection();
 			ps = conn.prepareStatement(querySearch);
+			ps.setInt(1, PUBLIC_SCHEDULE_LIMIT);
 			
 			rs = ps.executeQuery();
 			

@@ -5,13 +5,14 @@ import java.util.PriorityQueue;
 import java.util.Collections;
 import com.google.gson.Gson;
 
+import projectConfig.ProjectConfig;
 import scheduling.json.RequestJson;
 import scheduling.json.ReservedSetting;
 import scheduling.json.SchedulingResponse;
 
 public class Scheduler {
 
-    static final public int MAX_SCHEDULE_COUNT = 50;
+    static final public int MAX_SCHEDULE_COUNT = ProjectConfig.getGenerateScheduleLimit();
     
     private Evaluator early, late, breaks, reserved;
     private Course[] courses;

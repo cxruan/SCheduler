@@ -78,7 +78,7 @@ public class Schedule implements Comparable<Schedule> {
 		}
 		catch(JsonSyntaxException jse)
 		{
-			jse.printStackTrace();
+			System.out.println(jse.getMessage());
 			return null;
 		}
 		
