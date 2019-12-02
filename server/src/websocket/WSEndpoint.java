@@ -62,7 +62,7 @@ public class WSEndpoint {
     			JsonResponse bRes = null;
     			if(!s.inDatabase)
     			{
-    				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
+    				int pk = DatabaseManager.addSchedule(username, s.toJson(true), true);
     				if(pk > 0)
     				{
     					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, pk).toJson());
