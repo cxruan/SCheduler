@@ -17,7 +17,7 @@ import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 import java.io.InputStreamReader;
 
-@WebServlet("/api/AddCourseBin")
+@WebServlet("/api/add-course")
 public class AddCourseBin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
