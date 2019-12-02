@@ -39,6 +39,12 @@ public class WSEndpoint {
         System.out.println("WS: " + websocketSession.getId() + " connected.");
     }
 
+	// The schedule to be published is sent as a websocket message. Whether if
+	// the schedule needs to be saved into the database is determined by the
+	// inDatabase attribute of the schedule. If inDatabase is false or missing
+	// in the request, the schedule will be saved as a public schedule in the 
+	// database, otherwise the corresponding schedule entry will be updated to
+	// be public.
     @OnMessage
     public void onMessage(String message) {
     	String username = null;
