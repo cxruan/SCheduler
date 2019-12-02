@@ -5,8 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import entity.Credential;
+import scheduling.Schedule;
+import scheduling.json.SchedulingResponse;
 
 public class DatabaseManager {
 	private static String url = null;
@@ -238,7 +241,6 @@ public class DatabaseManager {
 			ps.setInt(2, scheduleId);
 			
 			return ps.executeUpdate();
-			
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		} catch (UrlNotSetException urle) {
@@ -260,6 +262,66 @@ public class DatabaseManager {
 			}
 		}
 		return 0;
+	}
+	
+	public static SchedulingResponse getHistory(String username) {	
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT context, public, scheduleId FROM Schedules WHERE userId=(SELECT userId from Users WHERE username=?) ORDER BY timestamp DESC";
+		
+		SchedulingResponse res = new SchedulingResponse();
+		
+		try {		
+			conn = getConnection();
+			ps = conn.prepareStatement(querySearch);
+			ps.setString(1, username);
+			
+			rs = ps.executeQuery();
+			
+			ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+			
+			while(rs.next())
+			{
+				Schedule s = Schedule.fromJson(rs.getString("content"));
+				if(s == null || !s.isValid())
+				{
+					continue;
+				}
+				s.id = rs.getInt("scheduleId");
+				s.inDatabase = true;
+				s.published = false;
+				schedules.add(s);
+			}
+			
+		
+			res.results = schedules.toArray(new Schedule[]{});
+			
+			return res;
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (UrlNotSetException urle) {
+			urle.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		res.error = "SQL error";
+		return res;
 	}
 }
 
