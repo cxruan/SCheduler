@@ -2,9 +2,11 @@ package scheduling;
 
 import java.lang.Comparable;
 
+import com.google.gson.annotations.Expose;
+
 public class TimeRange implements Comparable<TimeRange> {
 
-    public int start = -1, end = -1;
+	@Expose public int start = -1, end = -1;
 
     public TimeRange(int s, int e) {
         start = s;

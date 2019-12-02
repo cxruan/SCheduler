@@ -2,11 +2,13 @@ package scheduling;
 
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 public class Section {
-    public String name, ID, type, instructor, location;
-    public TimeRange time;
-    public Set<Integer> days;
-    public boolean include, penalize;
+	@Expose public String name, ID, type, instructor, location;
+	@Expose public TimeRange time;
+	@Expose public Set<Integer> days;
+	@Expose public boolean include, penalize;
     
     public boolean isValid()
     {
