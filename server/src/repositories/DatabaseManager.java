@@ -44,10 +44,8 @@ public class DatabaseManager {
 			ps = conn.prepareStatement(querySearch);
 			ps.setString(1, username);
 			rs = ps.executeQuery();
-			System.out.println("database: " + username);
 			while (rs.next()) {
 				String usernameToMatch = rs.getString("username"); 
-				System.out.println("database match: "+usernameToMatch+"\n");
 				if (username.compareTo(usernameToMatch) == 0) {
 					recorded = true;
 					break;
