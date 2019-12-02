@@ -31,12 +31,12 @@ public class GetHistory extends HttpServlet {
 		String username = (String)request.getAttribute("username");
 		if(username == null)
 		{
-//			SchedulingResponse res = new SchedulingResponse();
-//			res.error = "not logged in";
-//			response.getWriter().print(res.toJson());
-//		}
-//		else
-//		{
+			SchedulingResponse res = new SchedulingResponse();
+			res.error = "not logged in";
+			response.getWriter().print(res.toJson());
+		}
+		else
+		{
 			username = "admin";
 			response.getWriter().print(DatabaseManager.getHistory(username).toJson());
 		}
