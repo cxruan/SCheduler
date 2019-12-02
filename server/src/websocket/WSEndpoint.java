@@ -51,6 +51,7 @@ public class WSEndpoint {
     		
     		if(s != null && s.isValid())
     		{
+    			s.username = username;
     			JsonResponse bRes = null;
     			if(!s.inDatabase)
     			{
