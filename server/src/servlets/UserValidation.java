@@ -1,4 +1,4 @@
-package UserAccount;
+package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import entity.Credential;
 import entity.JsonResponse;
 import repositories.DatabaseManager;
+import userAuthUtil.Util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,4 +1,4 @@
-package UserAccount;
+package servlets;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 import entity.Credential;
 import entity.JsonResponse;
 import repositories.DatabaseManager;
+import userAuthUtil.Util;
 
 @WebServlet("/api/register")
 public class UserRegister extends HttpServlet
