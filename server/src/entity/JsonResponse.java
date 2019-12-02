@@ -2,8 +2,8 @@ package entity;
 
 import com.google.gson.Gson;
 
-public class BroadcastResponse {
-	public BroadcastResponse(String type, String message)
+public class JsonResponse {
+	public JsonResponse(String type, String message)
 	{
 		this.type = type;
 		this.message = message;		
