@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import entity.BroadcastResponse;
+import repositories.DatabaseManager;
+
 /**
  * Servlet implementation class SaveHistory
  */
@@ -28,13 +31,12 @@ public class SaveHistory extends HttpServlet {
 		String username = (String)request.getAttribute("username");
 		if(username == null)
 		{
-			SchedulingResponse res = new SchedulingResponse();
-			res.error = "not logged in";
+			BroadcastResponse res = new BroadcastResponse("error", "not logged in");
 			response.getWriter().print(res.toJson());
 		}
 		else
 		{
-			response.getWriter().print(DatabaseManager.getHistory(username).toJson());
+			response.getWriter().print(DatabaseManager.addSchedule(username, , false).toJson());
 		}
 	}
 
