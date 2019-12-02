@@ -8,13 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import entity.Credential;
+import entity.JsonResponse;
 import repositories.DatabaseManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mysql.jdbc.PreparedStatement;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/UserValidation")
+@WebServlet("/api/login")
 public class UserValidation extends HttpServlet 
 {
 	private static final long serialVersionUID = 1L;
@@ -30,24 +29,20 @@ public class UserValidation extends HttpServlet
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		HttpSession session = request.getSession();
-		Status status = new Status();
-		GsonBuilder builder = new GsonBuilder();
-		builder.setPrettyPrinting();
-		Gson gson = builder.create();
 		
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
 		if(username.trim().isEmpty())
 		{
-			status.setSuccess(false);
-			status.setMessage("Username cannot be blank.");
+			response.getWriter().append(new JsonResponse("error", "Username cannot be blank.").toJson());
+			return;
 		}
 		
 		if(password.trim().isEmpty())
 		{
-			status.setSuccess(false);
-			status.setMessage("Password cannot be blank.");
+			response.getWriter().append(new JsonResponse("error", "Password cannot be blank.").toJson());
+			return;
 		}
 		
 		boolean ValidUser = DatabaseManager.validateUsername(username);
@@ -59,24 +54,12 @@ public class UserValidation extends HttpServlet
 			
 			if(Validpassword)
 			{
-				status.setSuccess(true);
-				status.setMessage("Success");
+				response.getWriter().append(new JsonResponse("ok", null).toJson());
 				session.setAttribute("username", username);
-			}
-			else
-			{
-				status.setSuccess(false);
-				status.setMessage("Password is wrong");
+				return;
 			}
 		}
-		else
-		{
-			status.setSuccess(false);
-			status.setMessage("User does not exist.");
-		}
-		
-		String json = gson.toJson(status);
-		response.getWriter().append(json);
+		response.getWriter().append(new JsonResponse("error", "Username and password does not match").toJson());
 	}
 }
 
