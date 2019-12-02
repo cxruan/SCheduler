@@ -57,22 +57,22 @@ public class WSEndpoint {
     				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
     				if(pk > 0)
     				{
-    					bRes = new BroadcastResponse("SCHEDULE_ID", Integer.toString(pk));
+    					bRes = new BroadcastResponse("scheduleID", Integer.toString(pk));
     				}
     				else
     				{
-    					sendMessage(new BroadcastResponse("ERROR", "cannot inset into table").toJson());
+    					sendMessage(new BroadcastResponse("error", "cannot inset into table").toJson());
     				}
     			}
     			else
     			{
     				if(DatabaseManager.setPublic(username, s.id) > 0)
     				{
-    					bRes = new BroadcastResponse("SCHEDULE_ID", Integer.toString(s.id));
+    					bRes = new BroadcastResponse("scheduleID", Integer.toString(s.id));
     				}
     				else
     				{
-    					sendMessage(new BroadcastResponse("ERROR", "username does not match").toJson());
+    					sendMessage(new BroadcastResponse("error", "username does not match").toJson());
     				}
     			}
     			if(bRes != null)
@@ -84,18 +84,18 @@ public class WSEndpoint {
                         	wse.sendMessage(bRes.toJson());	
             			}
                     }
-            		sendMessage(new BroadcastResponse("OK", null).toJson()); 
+            		sendMessage(new BroadcastResponse("ok", null).toJson()); 
     			}
     		}
     		else
     		{
-    			sendMessage(new BroadcastResponse("ERROR", "invalid request").toJson()); 
+    			sendMessage(new BroadcastResponse("error", "invalid request").toJson()); 
     		}
 
     	}
     	else
     	{
-    		sendMessage(new BroadcastResponse("ERROR", "not logged in").toJson()); 
+    		sendMessage(new BroadcastResponse("error", "not logged in").toJson()); 
     	}      
     }
  
