@@ -35,44 +35,53 @@ public class UserValidation extends HttpServlet
 		builder.setPrettyPrinting();
 		Gson gson = builder.create();
 		
+		boolean next = true;
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		if(username.trim().isEmpty())
+		if(username.isEmpty())
 		{
 			status.setSuccess(false);
 			status.setMessage("Username cannot be blank.");
+			next = false;
 		}
 		
-		if(password.trim().isEmpty())
+		if(password.isEmpty()&&next)
 		{
 			status.setSuccess(false);
 			status.setMessage("Password cannot be blank.");
+			next = false;
 		}
 		
-		boolean ValidUser = DatabaseManager.validateUsername(username);
+		String test = "test";
+		boolean ValidUser = DatabaseManager.validateUsername(test);
+		System.out.println("username: "+test);
+		System.out.println("valid user123: "+ValidUser);
 		
-		if(ValidUser)
+		if(next)
 		{
-			Credential cr = DatabaseManager.getHashAndSalt(username);
-			boolean Validpassword = cr.getHash().equals(Util.sha256Digest(password + cr.getSalt()));
-			
-			if(Validpassword)
+			if(ValidUser)
 			{
-				status.setSuccess(true);
-				status.setMessage("Success");
-				session.setAttribute("username", username);
+				Credential cr = DatabaseManager.getHashAndSalt(username);
+				boolean Validpassword = cr.getHash().equals(Util.sha256Digest(password + cr.getSalt()));
+				
+				if(Validpassword)
+				{
+					status.setSuccess(true);
+					status.setMessage("Success");
+					session.setAttribute("username", username);
+				}
+				else
+				{
+					status.setSuccess(false);
+					status.setMessage("Password is wrong");
+				}
 			}
 			else
 			{
 				status.setSuccess(false);
-				status.setMessage("Password is wrong");
+				status.setMessage("User does not exist.");
 			}
-		}
-		else
-		{
-			status.setSuccess(false);
-			status.setMessage("User does not exist.");
 		}
 		
 		String json = gson.toJson(status);

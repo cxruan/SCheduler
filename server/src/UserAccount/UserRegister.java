@@ -31,26 +31,26 @@ public class UserRegister extends HttpServlet
 		String password = request.getParameter("password");
 		String confirmation = request.getParameter("confirmation");
 		
-		if(username.trim().isEmpty())
+		if(username.isEmpty())
 		{
 			status.setSuccess(false);
 			status.setMessage("Username cannot be blank.");
 		}
 		
-		if(password.trim().isEmpty())
+		if(password.isEmpty())
 		{
 			status.setSuccess(false);
 			status.setMessage("Password cannot be blank.");
 		}
 		
-		if(confirmation.trim().isEmpty())
+		if(confirmation.isEmpty())
 		{
 			status.setSuccess(false);
 			status.setMessage("You need to confirm password.");
 		}
 	
 		
-		if(!confirmation.trim().equals(password.trim()))
+		if(!confirmation.equals(password))
 		{
 			status.setSuccess(false);
 			status.setMessage("Fail to confirm password.");
