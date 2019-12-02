@@ -47,19 +47,13 @@ public class UserValidation extends HttpServlet
 			return;
 		}
 		
-		String test = "test";
-		boolean ValidUser = DatabaseManager.validateUsername(test);
-		System.out.println("username: "+test);
-		System.out.println("valid user123: "+ValidUser);
+		boolean ValidUser = DatabaseManager.validateUsername(username);
 		
-		if(next)
+		if(ValidUser)
 		{
-			if(ValidUser)
-			{
-				response.getWriter().append(new JsonResponse("ok", null).toJson());
-				session.setAttribute("username", username);
-				return;
-			}
+			response.getWriter().append(new JsonResponse("ok", null).toJson());
+			session.setAttribute("username", username);
+			return;
 		}
 		response.getWriter().append(new JsonResponse("error", "Username and password does not match").toJson());
 	}
