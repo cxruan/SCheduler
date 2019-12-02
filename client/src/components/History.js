@@ -70,9 +70,12 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
     onRowClick(rowData.id);
   };
 
-  // const handlePublish = () => {
-  //   socket.send({ id: selectedScheduleID });
-  // };
+  const handlePublish = () => {
+    const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    socket.addEventListener('open', function() {
+      socket.send(JSON.stringify({ id: selectedScheduleID }));
+    });
+  };
 
   return (
     <Grid container spacing={3}>
@@ -118,7 +121,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
               </Button>
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
+              <Button color="primary" variant="contained" fullWidth onClick={handlePublish}>
                 Publish
               </Button>
             </Grid>
