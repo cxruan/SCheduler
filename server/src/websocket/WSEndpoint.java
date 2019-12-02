@@ -13,6 +13,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import com.google.gson.Gson;
+
 import entity.JsonResponse;
 import repositories.DatabaseManager;
 import scheduling.Schedule;
@@ -63,7 +65,7 @@ public class WSEndpoint {
     				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
     				if(pk > 0)
     				{
-    					bRes = new JsonResponse("scheduleID", Integer.toString(pk));
+    					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, pk).toJson());
     				}
     				else
     				{
@@ -74,7 +76,7 @@ public class WSEndpoint {
     			{
     				if(DatabaseManager.setPublic(username, s.id) > 0)
     				{
-    					bRes = new JsonResponse("scheduleID", Integer.toString(s.id));
+    					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, s.id).toJson());
     				}
     				else
     				{
@@ -124,5 +126,22 @@ public class WSEndpoint {
             e.printStackTrace();
         }
         
+    }
+}
+
+class UsernameScheduleID {
+	public UsernameScheduleID(String username, int scheduleId)
+	{
+		username = this.username;
+		scheduleId = this.scheduleId;
+	}
+	
+	String username;
+	int scheduleId;
+	
+    public String toJson()
+    {
+    	Gson gson = new Gson();
+    	return gson.toJson(this);
     }
 }
