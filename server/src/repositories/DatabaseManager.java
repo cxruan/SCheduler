@@ -375,6 +375,66 @@ public class DatabaseManager {
 		res.error = "SQL error";
 		return res;
 	}
+	
+	public static SchedulingResponse getPublicSchedules() {	
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT s.content, s.scheduleId, u.username FROM Schedules s, Users u WHERE s.public=true AND s.userId=u.userId";
+		
+		SchedulingResponse res = new SchedulingResponse();
+		
+		try {		
+			conn = getConnection();
+			ps = conn.prepareStatement(querySearch);
+			
+			rs = ps.executeQuery();
+			
+			ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+			
+			while(rs.next())
+			{
+				Schedule s = Schedule.fromJson(rs.getString("content"));
+				if(s == null || !s.isValid())
+				{
+					continue;
+				}
+				s.id = rs.getInt("scheduleId");
+				s.inDatabase = true;
+				s.published =  true;
+				s.username = rs.getString("username");
+				schedules.add(s);
+			}
+			
+		
+			res.results = schedules.toArray(new Schedule[]{});
+			
+			return res;
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (UrlNotSetException urle) {
+			urle.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		res.error = "SQL error";
+		return res;
+	}
 }
 
 class UrlNotSetException extends RuntimeException {
