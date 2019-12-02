@@ -7,8 +7,6 @@ import java.util.Collections;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import scheduling.json.RequestJson;
-
 public class Schedule implements Comparable<Schedule> {
     
     public int id;

@@ -1,19 +1,10 @@
 package servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import entity.Credential;
 import entity.JsonResponse;
 import repositories.DatabaseManager;
 import userAuthUtil.Util;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

@@ -26,8 +26,7 @@ public class WSEndpoint {
     HttpSession httpSession = null;
     private static Set<WSEndpoint> endpoints = new CopyOnWriteArraySet<WSEndpoint>();
     
-    private EndpointConfig config;
-    
+      
     @OnOpen
     public void onOpen(Session websocketSession, EndpointConfig config) {
     	this.websocketSession = websocketSession;

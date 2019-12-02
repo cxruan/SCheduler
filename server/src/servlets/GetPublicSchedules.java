@@ -8,10 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import repositories.DatabaseManager;
-import scheduling.json.SchedulingResponse;
 
 /**
- * Servlet implementation class GetHistory
+ * Servlet implementation class GetPublicSchedules
  */
 @WebServlet("/api/public-schedules")
 public class GetPublicSchedules extends HttpServlet {

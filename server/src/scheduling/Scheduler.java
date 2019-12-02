@@ -28,8 +28,6 @@ public class Scheduler {
         	return response;
         }
         
-        Schedule[] schedules = null;
-        
         if(request.courses == null)
         {
         	response.error = "missing courses attribute";
