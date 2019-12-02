@@ -14,7 +14,7 @@ public class Schedule implements Comparable<Schedule> {
     public int id;
     public boolean inDatabase = false;
     public boolean published = false;
-    public String scheduleName;
+    public String scheduleName = null, username = null;
     public double total, early, late, breaks, reserved;
     public Section[] sections;
 

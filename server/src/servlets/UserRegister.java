@@ -31,13 +31,13 @@ public class UserRegister extends HttpServlet
 		String password = request.getParameter("password");
 		String confirmation = request.getParameter("confirmation");
 		
-		if(username.trim().isEmpty())
+		if(username.isEmpty())
 		{
 			response.getWriter().append(new JsonResponse("error", "Username cannot be blank.").toJson());
 			return;
 		}
 		
-		if(password.trim().isEmpty())
+		if(password.isEmpty())
 		{
 			response.getWriter().append(new JsonResponse("error", "Password cannot be blank.").toJson());
 			return;

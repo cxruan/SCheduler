@@ -43,9 +43,10 @@ public class DatabaseManager {
 			ps = conn.prepareStatement(querySearch);
 			ps.setString(1, username);
 			rs = ps.executeQuery();
-			
+			System.out.println("database: " + username);
 			while (rs.next()) {
 				String usernameToMatch = rs.getString("username"); 
+				System.out.println("database match: "+usernameToMatch+"\n");
 				if (username.compareTo(usernameToMatch) == 0) {
 					recorded = true;
 					break;
@@ -80,6 +81,56 @@ public class DatabaseManager {
 		}
 		return recorded;
 	}
+	
+	
+	/*public static boolean validateUsername(String username) {
+		boolean recorded = false;
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT * FROM Users WHERE username = ?";
+		
+		try {
+			conn = DriverManager.getConnection(url);
+			ps = conn.prepareStatement(querySearch);
+			ps.setString(1, username);
+			rs = ps.executeQuery();
+			
+			if(rs.next())
+			{
+				recorded = true;
+			}
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		return recorded;
+	}*/
+	
+	
 	
 	public static Credential getHashAndSalt(String username) {
 		Credential credential= null;

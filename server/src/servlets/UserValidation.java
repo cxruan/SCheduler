@@ -31,29 +31,30 @@ public class UserValidation extends HttpServlet
 	{
 		HttpSession session = request.getSession();
 		
+		boolean next = true;
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		if(username.trim().isEmpty())
+		if(username.isEmpty())
 		{
 			response.getWriter().append(new JsonResponse("error", "Username cannot be blank.").toJson());
 			return;
 		}
 		
-		if(password.trim().isEmpty())
+		if(password.isEmpty()&&next)
 		{
 			response.getWriter().append(new JsonResponse("error", "Password cannot be blank.").toJson());
 			return;
 		}
 		
-		boolean ValidUser = DatabaseManager.validateUsername(username);
+		String test = "test";
+		boolean ValidUser = DatabaseManager.validateUsername(test);
+		System.out.println("username: "+test);
+		System.out.println("valid user123: "+ValidUser);
 		
-		if(ValidUser)
+		if(next)
 		{
-			Credential cr = DatabaseManager.getHashAndSalt(username);
-			boolean Validpassword = cr.getHash().equals(Util.sha256Digest(password + cr.getSalt()));
-			
-			if(Validpassword)
+			if(ValidUser)
 			{
 				response.getWriter().append(new JsonResponse("ok", null).toJson());
 				session.setAttribute("username", username);
