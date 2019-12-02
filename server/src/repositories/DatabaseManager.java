@@ -269,7 +269,7 @@ public class DatabaseManager {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
-		String querySearch = "SELECT context, public, scheduleId FROM Schedules WHERE userId=(SELECT userId from Users WHERE username=?) ORDER BY timestamp DESC";
+		String querySearch = "SELECT content, public, scheduleId FROM Schedules WHERE userId=(SELECT userId from Users WHERE username=?) ORDER BY timestamp DESC";
 		
 		SchedulingResponse res = new SchedulingResponse();
 		
@@ -291,7 +291,7 @@ public class DatabaseManager {
 				}
 				s.id = rs.getInt("scheduleId");
 				s.inDatabase = true;
-				s.published = false;
+				s.published =  rs.getBoolean("public");
 				schedules.add(s);
 			}
 			
