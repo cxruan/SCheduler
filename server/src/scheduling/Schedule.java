@@ -4,24 +4,31 @@ import java.lang.Comparable;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import scheduling.json.RequestJson;
+
 public class Schedule implements Comparable<Schedule> {
     
-    int id;
-    String scheduleName;
-    double score;    
-    Section[] sections;
+    public int id;
+    public boolean inDatabase = false;
+    public boolean published = false;
+    public String scheduleName;
+    public double total, early, late, breaks, reserved;
+    public Section[] sections;
 
     public Schedule(Section[] s) {
         sections = s.clone();
-        score = 0;
+        total = early = late = breaks = reserved = 0;
     }
 
     @Override
     public int compareTo(Schedule rhs) {
-        if (score == rhs.score) {
+        if (total == rhs.total) {
             return hashCode() - rhs.hashCode();
         } else {
-            return (int) ((rhs.score - score) * 1000);
+            return (int) ((rhs.total - total) * 1000);
         }
     }
 
@@ -44,5 +51,45 @@ public class Schedule implements Comparable<Schedule> {
             table[i] = currDay.toArray(new TimeRange[]{});
         }
         return timeTable = table;
+    }
+    
+    public boolean isValid() {
+    	if(!(scheduleName != null && sections != null && sections.length > 0))
+    	{
+    		return false;
+    	}
+    	for(Section s : sections)
+    	{
+    		if(!s.isValid())
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    static public Schedule fromJson(String json)
+	{
+		Gson gson = new Gson();
+		
+		Schedule data = null;
+		
+		try
+		{
+			data = gson.fromJson(json, Schedule.class);
+		}
+		catch(JsonSyntaxException jse)
+		{
+			jse.printStackTrace();
+			return null;
+		}
+		
+		return data;
+	}
+    
+    public String toJson()
+    {
+    	Gson gson = new Gson();
+    	return gson.toJson(this);
     }
 }
