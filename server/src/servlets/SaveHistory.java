@@ -25,7 +25,17 @@ public class SaveHistory extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String username = (String)request.getAttribute("username");
+		if(username == null)
+		{
+			SchedulingResponse res = new SchedulingResponse();
+			res.error = "not logged in";
+			response.getWriter().print(res.toJson());
+		}
+		else
+		{
+			response.getWriter().print(DatabaseManager.getHistory(username).toJson());
+		}
 	}
 
 	/**
