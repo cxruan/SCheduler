@@ -40,12 +40,7 @@ public class WSEndpoint {
         System.out.println("WS: " + websocketSession.getId() + " connected.");
     }
 
-	// The schedule to be published is sent as a websocket message. Whether if
-	// the schedule needs to be saved into the database is determined by the
-	// inDatabase attribute of the schedule. If inDatabase is false or missing
-	// in the request, the schedule will be saved as a public schedule in the 
-	// database, otherwise the corresponding schedule entry will be updated to
-	// be public.
+	// The schedule to be published is sent as a websocket message.
     @OnMessage
     public void onMessage(String message) {
     	String username = null;
@@ -56,33 +51,20 @@ public class WSEndpoint {
     	{
     		Schedule s = Schedule.fromJson(message);
     		
-    		if(s != null && s.isValid())
+    		if(s != null)
     		{
     			s.username = username;
     			JsonResponse bRes = null;
-    			if(!s.inDatabase)
-    			{
-    				int pk = DatabaseManager.addSchedule(username, s.toJson(true), true);
-    				if(pk > 0)
-    				{
-    					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, pk).toJson());
-    				}
-    				else
-    				{
-    					sendMessage(new JsonResponse("error", "cannot inset into table").toJson());
-    				}
-    			}
-    			else
-    			{
-    				if(DatabaseManager.setPublic(username, s.id) > 0)
-    				{
-    					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, s.id).toJson());
-    				}
-    				else
-    				{
-    					sendMessage(new JsonResponse("error", "username does not match").toJson());
-    				}
-    			}
+    			
+				if(DatabaseManager.setPublic(username, s.id) > 0)
+				{
+					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, s.id).toJson());
+				}
+				else
+				{
+					sendMessage(new JsonResponse("error", "username does not match").toJson());
+				}
+				
     			if(bRes != null)
     			{
             		for(WSEndpoint wse : endpoints)

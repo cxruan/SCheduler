@@ -338,12 +338,11 @@ public class DatabaseManager {
 			while(rs.next())
 			{
 				Schedule s = Schedule.fromJson(rs.getString("content"));
-				if(s == null || !s.isValid())
+				if(s == null || !s.isComplete())
 				{
 					continue;
 				}
 				s.id = rs.getInt("scheduleId");
-				s.inDatabase = true;
 				s.published =  rs.getBoolean("public");
 				schedules.add(s);
 			}
@@ -400,12 +399,11 @@ public class DatabaseManager {
 			while(rs.next())
 			{
 				Schedule s = Schedule.fromJson(rs.getString("content"));
-				if(s == null || !s.isValid())
+				if(s == null || !s.isComplete())
 				{
 					continue;
 				}
 				s.id = rs.getInt("scheduleId");
-				s.inDatabase = true;
 				s.published =  true;
 				s.username = rs.getString("username");
 				schedules.add(s);

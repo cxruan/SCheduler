@@ -61,7 +61,7 @@ public class SaveSchedule extends HttpServlet {
 				return;
 			}
 			Schedule s = Schedule.fromJson(sb.toString());
-			if(s != null && s.isValid())
+			if(s != null && s.isComplete())
 			{
 				s.username = username;
 				if(DatabaseManager.addSchedule(username, s.toJson(true), false) > 0)

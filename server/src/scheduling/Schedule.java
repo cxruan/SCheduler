@@ -12,7 +12,6 @@ import com.google.gson.annotations.Expose;
 public class Schedule implements Comparable<Schedule> {
     
     public int id;
-    public boolean inDatabase = false;
     public boolean published = false;
     @Expose public String scheduleName = null, username = null;
     @Expose public double total, early, late, breaks, reserved;
@@ -53,7 +52,7 @@ public class Schedule implements Comparable<Schedule> {
         return timeTable = table;
     }
     
-    public boolean isValid() {
+    public boolean isComplete() {
     	if(!(scheduleName != null && sections != null && sections.length > 0))
     	{
     		return false;
