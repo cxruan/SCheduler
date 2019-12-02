@@ -59,6 +59,7 @@ public class WSEndpoint {
 				if(DatabaseManager.setPublic(username, s.id) > 0)
 				{
 					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, s.id).toJson());
+					sendMessage(new JsonResponse("ok", null).toJson()); 
 				}
 				else
 				{
@@ -74,7 +75,6 @@ public class WSEndpoint {
                         	wse.sendMessage(bRes.toJson());	
             			}
                     }
-            		sendMessage(new JsonResponse("ok", null).toJson()); 
     			}
     		}
     		else

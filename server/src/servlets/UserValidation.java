@@ -29,7 +29,7 @@ public class UserValidation extends HttpServlet {
 			return;
 		}
 
-		if (username == null || password.isEmpty()) {
+		if (password == null || password.isEmpty()) {
 			response.getWriter().append(new JsonResponse("error", "Password cannot be blank.").toJson());
 			return;
 		}
