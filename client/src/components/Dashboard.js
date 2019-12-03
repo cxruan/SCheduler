@@ -19,7 +19,7 @@ import {
   Tooltip,
   Avatar
 } from '@material-ui/core';
-import { purple } from '@material-ui/core/colors';
+import { orange } from '@material-ui/core/colors';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -115,9 +115,9 @@ const useStyles = makeStyles(theme => ({
   fixedHeight: {
     height: 480
   },
-  purple: {
+  orange: {
     color: '#fff',
-    backgroundColor: purple[500]
+    backgroundColor: orange[500]
   }
 }));
 
@@ -191,7 +191,7 @@ function Dashboard({
           </Typography>
           {user.status && (
             <Tooltip title={user.username} classes={tooltipClasses}>
-              <Avatar className={classes.purple}>{user.username[0]}</Avatar>
+              <Avatar className={classes.orange}>{user.username[0]}</Avatar>
             </Tooltip>
           )}
           {user.status ? (
