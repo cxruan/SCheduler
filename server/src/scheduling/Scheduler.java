@@ -90,10 +90,10 @@ public class Scheduler {
             ArrayList<ArrayList<TimeRange>> timeTable, PriorityQueue<Schedule> schedulesQueue) {
         if (courseNum >= courses.length) {
             Schedule s = new Schedule(selected.toArray(new Section[] {}));
-            s.early = early.evaluate(s);
-            s.late += late.evaluate(s);
-            s.breaks += breaks.evaluate(s);
-            s.reserved += reserved.evaluate(s);
+            s.early = early.evaluate(s) / 1000;
+            s.late = late.evaluate(s) / 1000;
+            s.breaks = breaks.evaluate(s) / 1000;
+            s.reserved = reserved.evaluate(s) / 10;
             s.total = s.early + s.late + s.breaks + s.reserved;
 
             if (schedulesQueue.size() < MAX_SCHEDULE_COUNT) {
@@ -112,7 +112,7 @@ public class Scheduler {
 
         for (Section curr : courses[courseNum].elements[componentNum].elements) {
 
-            if (!curr.include)
+            if (!curr.include || curr.time == null || curr.days == null)
                 continue;
                 
             boolean valid = true;
