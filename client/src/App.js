@@ -15,7 +15,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
-  const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
   React.useEffect(() => {
     axios.get('/api/login-status').then(function({ data }) {
       if (data.type === 'true') {
@@ -24,13 +23,18 @@ function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
     });
   }, []);
 
-  const action = key => <Button onClick={() => handleButtonClick(key)}>Have a look!</Button>;
+  const action = key => (
+    <Button color="secondary" variant="contained" onClick={() => handleButtonClick(key)}>
+      Have a look!
+    </Button>
+  );
 
   const handleButtonClick = key => {
     onRowClick(key);
     onTabClick(TABS.COMMUNITY, 'Community');
   };
 
+  const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
   socket.addEventListener('message', function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
@@ -39,6 +43,7 @@ function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
       key: scheduleId,
       variant: 'info',
       action,
+      autoHideDuration: 10000,
       anchorOrigin: {
         vertical: 'bottom',
         horizontal: 'right'

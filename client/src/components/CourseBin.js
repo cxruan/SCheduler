@@ -1,7 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Checkbox, TextField, Button, Box, Typography } from '@material-ui/core';
+import {
+  Select,
+  MenuItem,
+  InputLabel,
+  Checkbox,
+  TextField,
+  Button,
+  Box,
+  Typography
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MaterialTable from 'material-table';
 import axios from 'axios';
@@ -15,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: 200
+    width: 150
   },
   button: {
     margin: theme.spacing(1)
@@ -66,21 +75,29 @@ function CustomedToolbar({ errorText, setErrorText, setLoading, addNewCourse, on
         <Typography variant="h6">Course Bin</Typography>
       </Box>
       <Box>
-        <TextField
-          name="termID"
+        <InputLabel htmlFor="termID">Term Code</InputLabel>
+        <Select
+          className={classes.textField}
           value={values.termID}
           onChange={handleValueChange}
-          className={classes.textField}
-          label="Term Code"
-          margin="normal"
-        />
+          inputProps={{
+            name: 'termID',
+            id: 'termID'
+          }}
+        >
+          <MenuItem value={20201}>2020 Spring</MenuItem>
+          <MenuItem value={20193}>2019 Fall</MenuItem>
+          <MenuItem value={20192}>2019 Summer</MenuItem>
+        </Select>
+      </Box>
+      <Box>
         <TextField
           name="courseID"
           value={values.courseID}
           onChange={handleValueChange}
           className={classes.textField}
           label="Course Name"
-          margin="normal"
+          margin="none"
           error={Boolean(errorText)}
           helperText={errorText}
         />

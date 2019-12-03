@@ -84,6 +84,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
         })
         .finally(() => {
           setIsLoading(false);
+          socket.close();
         });
     });
     socket.addEventListener('open', function() {
@@ -135,11 +136,6 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
               </Button>
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
-                Export
-              </Button>
-            </Grid>
-            <Grid item xs={4}>
               <Button
                 color="primary"
                 variant="contained"
@@ -148,6 +144,11 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
                 disabled={selected === undefined || selected.published}
               >
                 Publish
+              </Button>
+            </Grid>
+            <Grid item xs={4}>
+              <Button color="primary" variant="contained" fullWidth>
+                Export
               </Button>
             </Grid>
           </Grid>

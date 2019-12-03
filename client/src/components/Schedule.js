@@ -10,6 +10,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { parseStateToCalEvents, parseStateToScores, parseStatesToGenSchedule } from '../utils';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './Schedule.css';
 import CustomCalEvent from './CustomCalEvent';
 import SaveToHistoryDialog from './SaveToHistoryDialog';
 
@@ -41,6 +42,7 @@ function Schedule({
   user,
   onDialogClick
 }) {
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isZoom, setIsZoom] = React.useState(false);
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
@@ -63,13 +65,16 @@ function Schedule({
   };
 
   const handleGeneSchedules = async () => {
+    setIsLoading(true);
     axios
       .post('api/generate-schedule', parseStatesToGenSchedule(courses, preferences))
       .then(function({ data }) {
         console.log(data);
-        onGenSchedules(data.results);
-      })
-      .finally(() => {});
+        setTimeout(() => {
+          setIsLoading(false);
+          onGenSchedules(data.results);
+        }, 1000);
+      });
   };
 
   const handleDialogOpen = () => {
@@ -82,6 +87,7 @@ function Schedule({
         <Grid container spacing={5} direction="column">
           <Grid item xs={12}>
             <MaterialTable
+              isLoading={isLoading}
               data={parseStateToScores(schedules)}
               columns={[
                 { title: 'Id', field: 'id', defaultSort: 'asc' },
@@ -103,7 +109,7 @@ function Schedule({
                     selectedScheduleID !== 0 && selectedScheduleID === rowData.id ? '#EEE' : '#FFF'
                 })
               }}
-              title="How much you'll hate this schedule"
+              title="Results"
               onRowClick={handleScoresRowClick}
             />
           </Grid>
