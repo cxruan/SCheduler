@@ -74,6 +74,10 @@ function parseTimeToObj(time) {
   if (start > end) {
     start -= 720;
   }
+  // eslint-disable-next-line no-restricted-globals
+  if (isNaN(start) || isNaN(end)) {
+    return null;
+  }
   return { start, end };
 }
 
