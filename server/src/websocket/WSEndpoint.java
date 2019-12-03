@@ -113,7 +113,7 @@ public class WSEndpoint {
 class WSResponse {
 	public WSResponse(String username, int scheduleId, String scheduleName)
 	{
-		this.status = "success";
+		this.status = "brocast";
 		this.username = username;
 		this.scheduleId = scheduleId;
 		this.scheduleName = scheduleName;
