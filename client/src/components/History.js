@@ -71,12 +71,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   };
 
   const handlePublish = () => {
-    let socket;
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
-    } else {
-      socket = new WebSocket('/api/broadcast-schedules');
-    }
+    const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
     socket.addEventListener('message', function(event) {
       console.log('Message from sent ', event.data);
       setIsLoading(true);
@@ -89,6 +84,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
         })
         .finally(() => {
           setIsLoading(false);
+          socket.close();
         });
     });
     socket.addEventListener('open', function() {
