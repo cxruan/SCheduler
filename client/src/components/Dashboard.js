@@ -30,6 +30,7 @@ import HistoryIcon from '@material-ui/icons/History';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HelpIcon from '@material-ui/icons/Help';
+import axios from 'axios';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
 import Tab from './Tab';
@@ -161,6 +162,13 @@ function Dashboard({
     onLoginClick(true);
   };
 
+  const handleLogOut = () => {
+    axios.get('/api/logout').finally(function() {
+      onLogOut();
+      onTabClick(TABS.COURSE_BIN, 'Course Bin');
+    });
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -188,7 +196,7 @@ function Dashboard({
           )}
           {user.status ? (
             <Tooltip title="Log Out" classes={tooltipClasses}>
-              <IconButton color="inherit" onClick={onLogOut}>
+              <IconButton color="inherit" onClick={handleLogOut}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>

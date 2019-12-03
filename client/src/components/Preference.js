@@ -272,7 +272,7 @@ function Preference({
           <Grid container spacing={2} direction="column">
             <Grid item>
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                I need reservedd breaks.
+                I need reserved breaks.
               </Typography>
             </Grid>
             <Grid item>
