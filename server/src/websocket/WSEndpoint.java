@@ -114,8 +114,8 @@ public class WSEndpoint {
 class UsernameScheduleID {
 	public UsernameScheduleID(String username, int scheduleId)
 	{
-		username = this.username;
-		scheduleId = this.scheduleId;
+		this.username = username;
+		this.scheduleId = scheduleId;
 	}
 	
 	String username;

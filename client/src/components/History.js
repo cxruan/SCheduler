@@ -36,6 +36,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const localizer = momentLocalizer(moment);
+  const selected = schedules.find(schedule => schedule.id === selectedScheduleID);
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -59,7 +60,6 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   };
 
   const getSelectedCalEvents = () => {
-    const selected = schedules.find(schedule => schedule.id === selectedScheduleID);
     if (selected) {
       return parseStateToCalEvents(selected.sections);
     }
@@ -72,6 +72,20 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
 
   const handlePublish = () => {
     const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    socket.addEventListener('message', function(event) {
+      console.log('Message from sent ', event.data);
+      setIsLoading(true);
+      axios
+        .get('/api/history')
+        .then(function({ data }) {
+          if (!data.error) {
+            onHistoryGet(data.results);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    });
     socket.addEventListener('open', function() {
       socket.send(JSON.stringify({ id: selectedScheduleID }));
     });
@@ -121,7 +135,13 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
               </Button>
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth onClick={handlePublish}>
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={handlePublish}
+                disabled={selected === undefined || selected.published}
+              >
                 Publish
               </Button>
             </Grid>

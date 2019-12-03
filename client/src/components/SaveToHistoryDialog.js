@@ -69,7 +69,7 @@ function SaveToHistoryDialog({
           if (data.type === 'ok') {
             handleDialogClose();
             enqueueSnackbar(`${values.scheduleName} Successfully saved to History!`, {
-              variant: 'info',
+              variant: 'success',
               anchorOrigin: {
                 vertical: 'bottom',
                 horizontal: 'right'

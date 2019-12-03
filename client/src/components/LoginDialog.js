@@ -82,7 +82,7 @@ function LoginDialog({ openLogin, onLoginClick, onRegisterClick, onLogIn, enqueu
           setErrorMsg('');
           handleLoginClose();
           enqueueSnackbar('Successfully log in!', {
-            variant: 'info',
+            variant: 'success',
             anchorOrigin: {
               vertical: 'bottom',
               horizontal: 'right'

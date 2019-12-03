@@ -78,7 +78,7 @@ function RegisterDialog({ openRegister, onRegisterClick, onLogIn, enqueueSnackba
           setErrorMsg('');
           handleRegisterClose();
           enqueueSnackbar('Successfully log in!', {
-            variant: 'info',
+            variant: 'success',
             anchorOrigin: {
               vertical: 'bottom',
               horizontal: 'right'
