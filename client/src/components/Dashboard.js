@@ -271,7 +271,7 @@ function Dashboard({
               <HistoryIcon />
             </ListItemIcon>
             <ListItemText primary="History" />
-            {!user.status && (
+            {!user.status && openDrawer && (
               <ListItemSecondaryAction>
                 <Tooltip title="Please log in to use History." classes={tooltipClasses}>
                   <IconButton>

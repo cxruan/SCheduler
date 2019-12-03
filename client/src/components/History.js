@@ -87,7 +87,12 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
         });
     });
     socket.addEventListener('open', function() {
-      socket.send(JSON.stringify({ id: selectedScheduleID }));
+      socket.send(
+        JSON.stringify({
+          id: selectedScheduleID,
+          scheduleName: schedules.find(schedule => schedule.id === selectedScheduleID).scheduleName
+        })
+      );
     });
   };
 

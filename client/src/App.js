@@ -9,10 +9,12 @@ import TABS from './constants';
 
 const mapDispatchToProps = dispatch => ({
   onLogIn: username => dispatch({ type: 'USER_LOGIN', username }),
-  onTabClick: (tabId, tabName) => dispatch({ type: 'CHANGE_TAB', tabId, tabName })
+  onTabClick: (tabId, tabName) => dispatch({ type: 'CHANGE_TAB', tabId, tabName }),
+  onRowClick: selectedScheduleID =>
+    dispatch({ type: 'SET_COMMUNITY_SELECTED_ID', selectedScheduleID })
 });
 
-function App({ enqueueSnackbar, onLogIn, onTabClick }) {
+function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
   const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
   React.useEffect(() => {
     axios.get('/api/login-status').then(function({ data }) {
@@ -22,18 +24,19 @@ function App({ enqueueSnackbar, onLogIn, onTabClick }) {
     });
   }, []);
 
-  const action = () => <Button onClick={handleButtonClick}>Have a look!</Button>;
+  const action = key => <Button onClick={() => handleButtonClick(key)}>Have a look!</Button>;
 
-  const handleButtonClick = () => {
+  const handleButtonClick = key => {
+    onRowClick(key);
     onTabClick(TABS.COMMUNITY, 'Community');
   };
 
   socket.addEventListener('message', function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
-    const { message } = data;
-    const msg = JSON.parse(message);
-    enqueueSnackbar(`${msg.username} has published a new schedule`, {
+    const { username, scheduleName, scheduleId } = data;
+    enqueueSnackbar(`${username} has published a new schedule ${scheduleName}`, {
+      key: scheduleId,
       variant: 'info',
       action,
       anchorOrigin: {
@@ -49,7 +52,8 @@ function App({ enqueueSnackbar, onLogIn, onTabClick }) {
 App.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   onLogIn: PropTypes.func.isRequired,
-  onTabClick: PropTypes.func.isRequired
+  onTabClick: PropTypes.func.isRequired,
+  onRowClick: PropTypes.func.isRequired
 };
 
 export default connect(null, mapDispatchToProps)(withSnackbar(App));

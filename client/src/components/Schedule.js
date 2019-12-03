@@ -49,7 +49,7 @@ function Schedule({
   const getSelectedCalEvents = () => {
     const selected = schedules.find(schedule => schedule.id === selectedScheduleID);
     if (selected) {
-      return parseStateToCalEvents(selected.sections);
+      return parseStateToCalEvents(selected.sections.filter(section => section.time !== undefined));
     }
     return [];
   };
@@ -103,7 +103,7 @@ function Schedule({
                     selectedScheduleID !== 0 && selectedScheduleID === rowData.id ? '#EEE' : '#FFF'
                 })
               }}
-              title="Scores"
+              title="How much you'll hate this schedule"
               onRowClick={handleScoresRowClick}
             />
           </Grid>

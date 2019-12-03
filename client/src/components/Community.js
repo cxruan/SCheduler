@@ -44,9 +44,9 @@ function Community({ schedules, selectedScheduleID, onRowClick, onCommunityGet }
       .then(function({ data }) {
         if (!data.error) {
           onCommunityGet(data.results);
-          if (data.results.length > 0) {
-            onRowClick(data.results[data.results.length - 1].id);
-          }
+          // if (data.results.length > 0 && selectedScheduleID === 0) {
+          //   onRowClick(data.results[data.results.length - 1].id);
+          // }
         }
       })
       .finally(() => {
