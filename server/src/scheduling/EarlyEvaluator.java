@@ -15,7 +15,7 @@ class EarlyEvaluator implements Evaluator {
         TimeRange[][] timeTable = s.getTimeTable();
         double cost = 0;
         for (int i = 0; i < 7; i++) {
-            int firstSectionBegins = 0;
+            int firstSectionBegins = 24 * 60;
             for(int j = 0; j < timeTable[i].length; j++)
             {
             	if(timeTable[i][j] != null)
