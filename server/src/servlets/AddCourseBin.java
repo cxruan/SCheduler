@@ -88,7 +88,7 @@ public class AddCourseBin extends HttpServlet {
 						sf.time = row.select("td.time").text();
 						sf.days =  row.select("td.days").text();
 						sf.instructor = row.select("td.instructor").text();
-						sf.location = row.select("td.type").text();
+						sf.location = row.select("td.location").text();
 						sf.type = "child";
 						sf.parentId = courseID + "-" + sf.class_type;
 
