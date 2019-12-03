@@ -22,3 +22,10 @@
   overflow: hidden;
   position: absolute;
 }
+
+.rbc-event.rbc-selected {
+  background-color: #990000;
+}
+.rbc-event:focus {
+  outline: 5px auto #990000;
+}
