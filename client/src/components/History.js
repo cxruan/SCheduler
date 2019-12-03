@@ -71,7 +71,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   };
 
   const handlePublish = () => {
-    const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    const socket = new WebSocket('/api/broadcast-schedules');
     socket.addEventListener('message', function(event) {
       console.log('Message from sent ', event.data);
       setIsLoading(true);

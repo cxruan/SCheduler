@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
-  const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+  const socket = new WebSocket('/api/broadcast-schedules');
   React.useEffect(() => {
     axios.get('/api/login-status').then(function({ data }) {
       if (data.type === 'true') {
