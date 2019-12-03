@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import entity.Credential;
+import projectConfig.ProjectConfig;
 import scheduling.Schedule;
 import scheduling.json.SchedulingResponse;
 
@@ -43,10 +44,8 @@ public class DatabaseManager {
 			ps = conn.prepareStatement(querySearch);
 			ps.setString(1, username);
 			rs = ps.executeQuery();
-			System.out.println("database: " + username);
 			while (rs.next()) {
 				String usernameToMatch = rs.getString("username"); 
-				System.out.println("database match: "+usernameToMatch+"\n");
 				if (username.compareTo(usernameToMatch) == 0) {
 					recorded = true;
 					break;
@@ -337,13 +336,74 @@ public class DatabaseManager {
 			while(rs.next())
 			{
 				Schedule s = Schedule.fromJson(rs.getString("content"));
-				if(s == null || !s.isValid())
+				if(s == null || !s.isComplete())
 				{
 					continue;
 				}
 				s.id = rs.getInt("scheduleId");
-				s.inDatabase = true;
 				s.published =  rs.getBoolean("public");
+				schedules.add(s);
+			}
+			
+		
+			res.results = schedules.toArray(new Schedule[]{});
+			
+			return res;
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (UrlNotSetException urle) {
+			urle.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException sqle) {
+					sqle.printStackTrace();
+				}
+			}
+		}
+		res.error = "SQL error";
+		return res;
+	}
+	
+	static final private int PUBLIC_SCHEDULE_LIMIT = ProjectConfig.getPublicScheduleLimit();
+	
+	public static SchedulingResponse getPublicSchedules() {	
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		String querySearch = "SELECT s.content, s.scheduleId, u.username FROM Schedules s, Users u WHERE s.public=true AND s.userId=u.userId ORDER BY timestamp DESC LIMIT ?";
+		
+		SchedulingResponse res = new SchedulingResponse();
+		
+		try {		
+			conn = getConnection();
+			ps = conn.prepareStatement(querySearch);
+			ps.setInt(1, PUBLIC_SCHEDULE_LIMIT);
+			
+			rs = ps.executeQuery();
+			
+			ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+			
+			while(rs.next())
+			{
+				Schedule s = Schedule.fromJson(rs.getString("content"));
+				if(s == null || !s.isComplete())
+				{
+					continue;
+				}
+				s.id = rs.getInt("scheduleId");
+				s.published =  true;
+				s.username = rs.getString("username");
 				schedules.add(s);
 			}
 			

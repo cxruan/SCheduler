@@ -4,7 +4,7 @@ const initialState = {
     weight: 50
   },
   late: {
-    time: 480,
+    time: 900,
     weight: 50
   },
   breaks: {

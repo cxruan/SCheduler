@@ -13,7 +13,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import entity.JsonResponse;
+import com.google.gson.Gson;
+
 import repositories.DatabaseManager;
 import scheduling.Schedule;
 
@@ -26,8 +27,7 @@ public class WSEndpoint {
     HttpSession httpSession = null;
     private static Set<WSEndpoint> endpoints = new CopyOnWriteArraySet<WSEndpoint>();
     
-    private EndpointConfig config;
-    
+      
     @OnOpen
     public void onOpen(Session websocketSession, EndpointConfig config) {
     	this.websocketSession = websocketSession;
@@ -39,6 +39,7 @@ public class WSEndpoint {
         System.out.println("WS: " + websocketSession.getId() + " connected.");
     }
 
+	// The schedule to be published is sent as a websocket message.
     @OnMessage
     public void onMessage(String message) {
     	String username = null;
@@ -49,32 +50,21 @@ public class WSEndpoint {
     	{
     		Schedule s = Schedule.fromJson(message);
     		
-    		if(s != null && s.isValid())
+    		if(s != null)
     		{
-    			JsonResponse bRes = null;
-    			if(!s.inDatabase)
-    			{
-    				int pk = DatabaseManager.addSchedule(username, s.toJson(), true);
-    				if(pk > 0)
-    				{
-    					bRes = new JsonResponse("scheduleID", Integer.toString(pk));
-    				}
-    				else
-    				{
-    					sendMessage(new JsonResponse("error", "cannot inset into table").toJson());
-    				}
-    			}
-    			else
-    			{
-    				if(DatabaseManager.setPublic(username, s.id) > 0)
-    				{
-    					bRes = new JsonResponse("scheduleID", Integer.toString(s.id));
-    				}
-    				else
-    				{
-    					sendMessage(new JsonResponse("error", "username does not match").toJson());
-    				}
-    			}
+    			s.username = username;
+    			WSResponse bRes = null;
+    			
+				if(DatabaseManager.setPublic(username, s.id) > 0)
+				{
+					bRes = new WSResponse(username, s.id, s.scheduleName);
+					sendMessage(new WSResponse().toJson()); 
+				}
+				else
+				{
+					sendMessage(new WSResponse("Username does not match").toJson());
+				}
+				
     			if(bRes != null)
     			{
             		for(WSEndpoint wse : endpoints)
@@ -84,18 +74,17 @@ public class WSEndpoint {
                         	wse.sendMessage(bRes.toJson());	
             			}
                     }
-            		sendMessage(new JsonResponse("ok", null).toJson()); 
     			}
     		}
     		else
     		{
-    			sendMessage(new JsonResponse("error", "invalid request").toJson()); 
+    			sendMessage(new WSResponse("Invalid request.").toJson()); 
     		}
 
     	}
     	else
     	{
-    		sendMessage(new JsonResponse("error", "not logged in").toJson()); 
+    		sendMessage(new WSResponse("You must login first.").toJson()); 
     	}      
     }
  
@@ -118,5 +107,35 @@ public class WSEndpoint {
             e.printStackTrace();
         }
         
+    }
+}
+
+class WSResponse {
+	public WSResponse(String username, int scheduleId, String scheduleName)
+	{
+		this.status = "brocast";
+		this.username = username;
+		this.scheduleId = scheduleId;
+		this.scheduleName = scheduleName;
+	}
+	
+	public WSResponse(String message)
+	{
+		this.status = "error";
+		this.message = message;
+	}
+	
+	public WSResponse()
+	{
+		this.status = "ok";
+	}
+	
+	String status, username, scheduleName, message;
+	int scheduleId;
+	
+    public String toJson()
+    {
+    	Gson gson = new Gson();
+    	return gson.toJson(this);
     }
 }

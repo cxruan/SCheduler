@@ -5,13 +5,14 @@ import java.util.PriorityQueue;
 import java.util.Collections;
 import com.google.gson.Gson;
 
+import projectConfig.ProjectConfig;
 import scheduling.json.RequestJson;
 import scheduling.json.ReservedSetting;
 import scheduling.json.SchedulingResponse;
 
 public class Scheduler {
 
-    static final public int MAX_SCHEDULE_COUNT = 50;
+    static final public int MAX_SCHEDULE_COUNT = ProjectConfig.getGenerateScheduleLimit();
     
     private Evaluator early, late, breaks, reserved;
     private Course[] courses;
@@ -27,8 +28,6 @@ public class Scheduler {
         	response.error = "malformed request";
         	return response;
         }
-        
-        Schedule[] schedules = null;
         
         if(request.courses == null)
         {
@@ -91,10 +90,10 @@ public class Scheduler {
             ArrayList<ArrayList<TimeRange>> timeTable, PriorityQueue<Schedule> schedulesQueue) {
         if (courseNum >= courses.length) {
             Schedule s = new Schedule(selected.toArray(new Section[] {}));
-            s.early = early.evaluate(s);
-            s.late += late.evaluate(s);
-            s.breaks += breaks.evaluate(s);
-            s.reserved += reserved.evaluate(s);
+            s.early = early.evaluate(s) / 1000;
+            s.late = late.evaluate(s) / 1000;
+            s.breaks = breaks.evaluate(s) / 1000;
+            s.reserved = reserved.evaluate(s) / 10;
             s.total = s.early + s.late + s.breaks + s.reserved;
 
             if (schedulesQueue.size() < MAX_SCHEDULE_COUNT) {
@@ -115,39 +114,47 @@ public class Scheduler {
 
             if (!curr.include)
                 continue;
-                
+            
             boolean valid = true;
-            for (int day : curr.days) {
-                int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
-                if (index >= 0) {
-                    valid = false;
-                    break;
-                } else {
-                    int insertAt = -(index + 1);
-                    if (insertAt > 0 && timeTable.get(day - 1).get(insertAt - 1).overlaps(curr.time)) {
+            if(curr.time != null && curr.days != null) {
+            	for (int day : curr.days) {
+                    int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
+                    if (index >= 0) {
                         valid = false;
                         break;
-                    }
-                    if (insertAt < timeTable.get(day - 1).size()
-                            && timeTable.get(day - 1).get(insertAt).overlaps(curr.time)) {
-                        valid = false;
-                        break;
+                    } else {
+                        int insertAt = -(index + 1);
+                        if (insertAt > 0 && timeTable.get(day - 1).get(insertAt - 1).overlaps(curr.time)) {
+                            valid = false;
+                            break;
+                        }
+                        if (insertAt < timeTable.get(day - 1).size()
+                                && timeTable.get(day - 1).get(insertAt).overlaps(curr.time)) {
+                            valid = false;
+                            break;
+                        }
                     }
                 }
             }
+            
+            
             if (valid) {
                 selected.add(curr);
-                for (int day : curr.days) {
-                    int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
-                    int insertAt = -(index + 1);
-                    timeTable.get(day - 1).add(insertAt, curr.time);
+                if(curr.time != null) {
+                    for (int day : curr.days) {
+                        int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
+                        int insertAt = -(index + 1);
+                        timeTable.get(day - 1).add(insertAt, curr.time);
+                    }
                 }
 
                 solve(courseNum, componentNum + 1, selected, timeTable, schedulesQueue);
 
                 selected.remove(selected.size() - 1);
-                for (int day : curr.days) {
-                    timeTable.get(day - 1).remove(curr.time);
+                if(curr.time != null) {
+                	for (int day : curr.days) {
+                        timeTable.get(day - 1).remove(curr.time);
+                    }
                 }
             }
         }

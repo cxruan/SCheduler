@@ -37,7 +37,7 @@ function CustomedToolbar({ errorText, setErrorText, setLoading, addNewCourse, on
   async function handleAddNewCourse() {
     setLoading(true);
     axios
-      .get('/api/AddCourseBin', {
+      .get('/api/add-course', {
         params: {
           termID: values.termID,
           courseID: values.courseID

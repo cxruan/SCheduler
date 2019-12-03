@@ -1,6 +1,7 @@
 const initialState = {
   schedules: [],
-  selectedScheduleID: 1
+  selectedScheduleID: 1,
+  openDialog: false
 };
 
 export default function(state = initialState, action) {
@@ -13,6 +14,12 @@ export default function(state = initialState, action) {
     }
     case 'GEN_SCHEDULES': {
       return { ...state, schedules: action.schedules };
+    }
+    case 'TOGGLE_SAVE_TO_HISTORY': {
+      return {
+        ...state,
+        openDialog: action.openDialog
+      };
     }
     default:
       return state;

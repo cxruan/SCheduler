@@ -13,7 +13,7 @@ import scheduling.json.SchedulingResponse;
 /**
  * Servlet implementation class GetHistory
  */
-@WebServlet("/api/schedule-history")
+@WebServlet("/api/history")
 public class GetHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -29,7 +29,7 @@ public class GetHistory extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = (String)request.getAttribute("username");
+		String username = (String)request.getSession().getAttribute("username");
 		if(username == null)
 		{
 			SchedulingResponse res = new SchedulingResponse();

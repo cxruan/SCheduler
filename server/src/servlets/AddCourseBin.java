@@ -9,15 +9,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.jsoup.nodes.Element;
 import java.io.InputStreamReader;
 
-@WebServlet("/api/AddCourseBin")
+@WebServlet("/api/add-course")
 public class AddCourseBin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -33,25 +41,21 @@ public class AddCourseBin extends HttpServlet {
 		}
 	}
 
+	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String courseID = "";
-		String termID = "";
-		Success s = new Success();
-		Error e = new Error();
-		SerializedJson Json = new SerializedJson();
+		String courseID = null;
+		String termID = null;
+		
+		courseID = request.getParameter("courseID");
+		termID = request.getParameter("termID");
+		
+		AddCourseBinResponse res = null;
 
-		if (request.getParameter("courseID") != null)
-			courseID = request.getParameter("courseID").trim();
-		if (request.getParameter("termID") != null)
-			termID = request.getParameter("termID").trim();
-
-		if (courseID == "" && termID == "") {
-			e.message = "Course code and semester time must be specified.";
-		} else if (courseID == "") {
-			e.message = "Course code cannot be empty.";
-		} else if (termID == "") {
-			e.message = "Semester time unspecified.";
+		if (courseID == null || courseID.isEmpty()) {
+			res = new AddCourseBinResponse("Course ID cannot be empty.");
+		} else if (termID == null || termID.isEmpty()) {
+			res = new AddCourseBinResponse("Term cannot be empty.");
 		} else {
 			URL url = new URL("https://classes.usc.edu/term-" + termID + "/course/" + courseID);
 			HttpURLConnection connect = (HttpURLConnection) url.openConnection();
@@ -72,69 +76,89 @@ public class AddCourseBin extends HttpServlet {
 			Elements info = doc.select(".sections");
 
 			if (info == null) {
-				e.message = "Course doesn't exist.";
+				res = new AddCourseBinResponse("Course does not exist.");
 			} else {
 				courseID = courseID.toUpperCase();
+				Map<String, ArrayList<SessionInfo>> map = new HashMap<String, ArrayList<SessionInfo>>();
 
-				boolean first = true;
-				boolean hasLec = false;
-				boolean hasDis = false;
-				boolean hasQuiz = false;
-				boolean hasLab = false;
-
-				for (Element row : info.select("tr")) {
-					if (first) {
-						first = false;
-						ParentClassInfo pif = new ParentClassInfo();
-						pif.id = courseID;
-						pif.type = "adult";
-
-						s.data.add(pif);
-					} else {
-						Elements tds = row.select("td");
-						SessionInfo sf = new SessionInfo();
-						sf.id = tds.get(0).text();
-						sf.class_type = tds.get(2).text();
-						sf.time = tds.get(3).text();
-						sf.days = tds.get(4).text();
-						sf.instructor = tds.get(6).text();
-						sf.location = tds.get(7).text();
+				for (Element row : info.select("tr[data-section-id]")) {
+					SessionInfo sf = new SessionInfo();
+						sf.id = row.select("td.section").text();
+						sf.class_type = row.select("td.type").text();
+						sf.time = row.select("td.time").text();
+						sf.days =  row.select("td.days").text();
+						sf.instructor = row.select("td.instructor").text();
+						sf.location = row.select("td.type").text();
 						sf.type = "child";
 						sf.parentId = courseID + "-" + sf.class_type;
 
-						if (hasLec == false && sf.class_type.equalsIgnoreCase("Lecture")) {
-							hasLec = true;
-							Category lec = new Category();
-							lec.id = courseID + "-" + sf.class_type;
-							lec.parentId = courseID;
-
-							s.data.add(lec);
-						} else if (hasDis == false && sf.class_type.equalsIgnoreCase("Discussion")) {
-							hasDis = true;
-							Category dis = new Category();
-							dis.id = courseID + "-" + sf.class_type;
-							dis.parentId = courseID;
-							s.data.add(dis);
-						} else if (hasQuiz == false && sf.class_type.equalsIgnoreCase("Quiz")) {
-							hasQuiz = true;
-							Category quiz = new Category();
-							quiz.id = courseID + "-" + sf.class_type;
-							quiz.parentId = courseID;
-							s.data.add(quiz);
-						} else if (hasLab == false && sf.class_type.equalsIgnoreCase("Lab")) {
-							hasLab = true;
-							Category lab = new Category();
-							lab.id = courseID + "-" + sf.class_type;
-							lab.parentId = courseID;
-							s.data.add(lab);
+						if(!map.containsKey(sf.class_type))
+						{
+							map.put(sf.class_type, new ArrayList<SessionInfo>());
 						}
-
-						s.data.add(sf);
+						
+						map.get(sf.class_type).add(sf);
+				}
+				
+				res = new AddCourseBinResponse();
+				res.dataAL.add(new ResponseItemHeader(courseID, "adult", null));
+				
+				for(String type : map.keySet())
+				{
+					res.dataAL.add(new ResponseItemHeader(courseID + "-" + type, "child", courseID));
+					for(SessionInfo session : map.get(type))
+					{
+						res.dataAL.add(session);
 					}
 				}
 			}
 		}
-		Json.finishJson(e, s);
-		response.getWriter().append(Json.Json);
+		
+		response.getWriter().append(res.toJson());
 	}
+}
+
+class AddCourseBinResponse {
+	public AddCourseBinResponse()
+	{
+		status = "success";
+	}
+	public AddCourseBinResponse(String error)
+	{
+		status = "error";
+		message = error;
+	}
+	String status;
+	Object[] data;
+	transient ArrayList<Object> dataAL = new ArrayList<Object>();
+	String message;
+	
+    public String toJson()
+    {
+    	data = dataAL.toArray();
+    	Gson gson = null;
+    	gson = new Gson();
+    	return gson.toJson(this);
+    }
+}
+
+class SessionInfo {
+	public String id;
+	public String class_type;
+	public String time;
+	public String days;
+	public String instructor;
+	public String location;
+	public String type;
+	public String parentId;
+}
+
+class ResponseItemHeader {
+	public ResponseItemHeader(String id, String type, String pId)
+	{
+		this.id = id;
+		this.type = type;
+		this.parentId = pId;
+	}
+	String id, type, parentId;	
 }

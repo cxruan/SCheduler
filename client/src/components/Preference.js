@@ -118,7 +118,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love getting up early.
+                    I hate getting up early.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -147,7 +147,7 @@ function Preference({
                   <Grid container spacing={2}>
                     <Grid item>
                       <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                        How early is early?
+                        How early is too early?
                       </Typography>
                     </Grid>
                     <Grid item xs={2}>
@@ -167,7 +167,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love getting home late.
+                    I hate getting home late.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -195,7 +195,7 @@ function Preference({
                   <Grid container spacing={2}>
                     <Grid item>
                       <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                        How late is late?
+                        How late is too late?
                       </Typography>
                     </Grid>
                     <Grid item xs={2}>
@@ -215,7 +215,7 @@ function Preference({
               <Grid container spacing={2} direction="column">
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    I love long breaks between classes.
+                    I hate long breaks between classes.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -243,7 +243,7 @@ function Preference({
                   <Grid container spacing={2}>
                     <Grid item>
                       <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                        How long is long?
+                        How long is too long?
                       </Typography>
                     </Grid>
                     <Grid item xs={3}>
@@ -272,7 +272,7 @@ function Preference({
           <Grid container spacing={2} direction="column">
             <Grid item>
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                I need reservedd breaks.
+                I need reserved breaks.
               </Typography>
             </Grid>
             <Grid item>
@@ -280,7 +280,7 @@ function Preference({
                 <Grid item>
                   <Chip color="primary" label="From" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <TimePicker
                     inputProps={{ style: { textAlign: 'center' } }}
                     value={parseStateToTime(newReserved.start)}
@@ -290,21 +290,15 @@ function Preference({
                 <Grid item>
                   <Chip color="primary" label="To" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <TimePicker
                     inputProps={{ style: { textAlign: 'center' } }}
                     value={parseStateToTime(newReserved.end)}
                     onChange={handleNewReservedEndChange}
                   />
                 </Grid>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <Grid container spacing={2}>
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Minimum time that overlaps the above time frame.
-                  </Typography>
+                  <Chip color="primary" label="For at least" />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
@@ -322,6 +316,18 @@ function Preference({
                 </Grid>
               </Grid>
             </Grid>
+            {/* <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                    Minimum time that overlaps the above time frame.
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  
+                </Grid>
+              </Grid>
+            </Grid> */}
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>

@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-
-import scheduling.json.RequestJson;
+import com.google.gson.annotations.Expose;
 
 public class Schedule implements Comparable<Schedule> {
     
     public int id;
-    public boolean inDatabase = false;
     public boolean published = false;
-    public String scheduleName;
-    public double total, early, late, breaks, reserved;
-    public Section[] sections;
+    @Expose public String scheduleName = null, username = null;
+    @Expose public double total, early, late, breaks, reserved;
+    @Expose public Section[] sections;
 
     public Schedule(Section[] s) {
         sections = s.clone();
@@ -43,7 +42,7 @@ public class Schedule implements Comparable<Schedule> {
         for (int i = 0; i < 7; i++) {
             ArrayList<TimeRange> currDay = new ArrayList<TimeRange>();
             for (Section s : sections) {
-                if (s.penalize && s.days.contains(i + 1)) {
+                if (s.penalize && s.days.contains(i + 1) && s.time != null) {
                     int index = -(Collections.binarySearch(currDay, s.time) + 1);
                     currDay.add(index, s.time);
                 }
@@ -53,7 +52,7 @@ public class Schedule implements Comparable<Schedule> {
         return timeTable = table;
     }
     
-    public boolean isValid() {
+    public boolean isComplete() {
     	if(!(scheduleName != null && sections != null && sections.length > 0))
     	{
     		return false;
@@ -80,7 +79,7 @@ public class Schedule implements Comparable<Schedule> {
 		}
 		catch(JsonSyntaxException jse)
 		{
-			jse.printStackTrace();
+			System.out.println(jse.getMessage());
 			return null;
 		}
 		
@@ -89,7 +88,21 @@ public class Schedule implements Comparable<Schedule> {
     
     public String toJson()
     {
-    	Gson gson = new Gson();
+    	return toJson(false);
+    }
+    
+    // if excludeFields is true, attributes id, inDatabase, published are excluded.
+    public String toJson(boolean excludeFields)
+    {
+    	Gson gson = null;
+    	if(excludeFields)
+    	{
+    		gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    	}
+    	else
+    	{
+    		gson = new Gson();
+    	}
     	return gson.toJson(this);
     }
 }
