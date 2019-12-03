@@ -61,7 +61,7 @@ function Community({ schedules, selectedScheduleID, onRowClick, onCommunityGet }
   const getSelectedCalEvents = () => {
     const selected = schedules.find(schedule => schedule.id === selectedScheduleID);
     if (selected) {
-      return parseStateToCalEvents(selected.sections);
+      return parseStateToCalEvents(selected.sections.filter(section => section.time !== undefined));
     }
     return [];
   };

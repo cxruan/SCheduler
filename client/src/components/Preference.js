@@ -117,7 +117,7 @@ function Preference({
             <Paper className={fixedHeightPaper2}>
               <Grid container spacing={2} direction="column">
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                  <Typography component="h2" variant="h6" gutterBottom>
                     I hate getting up early.
                   </Typography>
                 </Grid>
@@ -146,7 +146,7 @@ function Preference({
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                      <Typography component="h2" variant="h6" gutterBottom>
                         How early is too early?
                       </Typography>
                     </Grid>
@@ -166,7 +166,7 @@ function Preference({
             <Paper className={fixedHeightPaper2}>
               <Grid container spacing={2} direction="column">
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                  <Typography component="h2" variant="h6" gutterBottom>
                     I hate getting home late.
                   </Typography>
                 </Grid>
@@ -194,7 +194,7 @@ function Preference({
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                      <Typography component="h2" variant="h6" gutterBottom>
                         How late is too late?
                       </Typography>
                     </Grid>
@@ -214,7 +214,7 @@ function Preference({
             <Paper className={fixedHeightPaper2}>
               <Grid container spacing={2} direction="column">
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                  <Typography component="h2" variant="h6" gutterBottom>
                     I hate long breaks between classes.
                   </Typography>
                 </Grid>
@@ -242,7 +242,7 @@ function Preference({
                 <Grid item>
                   <Grid container spacing={2}>
                     <Grid item>
-                      <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                      <Typography component="h2" variant="h6" gutterBottom>
                         How long is too long?
                       </Typography>
                     </Grid>
@@ -271,7 +271,7 @@ function Preference({
         <Paper className={fixedHeightPaper1}>
           <Grid container spacing={2} direction="column">
             <Grid item>
-              <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              <Typography component="h2" variant="h6" gutterBottom>
                 I need reserved breaks.
               </Typography>
             </Grid>
@@ -320,7 +320,7 @@ function Preference({
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                  <Typography component="h2" variant="h6" gutterBottom>
                     Don&apos;t care
                   </Typography>
                 </Grid>
@@ -336,7 +336,7 @@ function Preference({
                   />
                 </Grid>
                 <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                  <Typography component="h2" variant="h6" gutterBottom>
                     I mean it
                   </Typography>
                 </Grid>

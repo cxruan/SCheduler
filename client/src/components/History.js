@@ -61,7 +61,7 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
 
   const getSelectedCalEvents = () => {
     if (selected) {
-      return parseStateToCalEvents(selected.sections);
+      return parseStateToCalEvents(selected.sections.filter(section => section.time !== undefined));
     }
     return [];
   };
