@@ -140,17 +140,21 @@ public class Scheduler {
             
             if (valid) {
                 selected.add(curr);
-                for (int day : curr.days) {
-                    int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
-                    int insertAt = -(index + 1);
-                    timeTable.get(day - 1).add(insertAt, curr.time);
+                if(curr.time != null) {
+                    for (int day : curr.days) {
+                        int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
+                        int insertAt = -(index + 1);
+                        timeTable.get(day - 1).add(insertAt, curr.time);
+                    }
                 }
 
                 solve(courseNum, componentNum + 1, selected, timeTable, schedulesQueue);
 
                 selected.remove(selected.size() - 1);
-                for (int day : curr.days) {
-                    timeTable.get(day - 1).remove(curr.time);
+                if(curr.time != null) {
+                	for (int day : curr.days) {
+                        timeTable.get(day - 1).remove(curr.time);
+                    }
                 }
             }
         }
