@@ -15,7 +15,6 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.google.gson.Gson;
 
-import entity.JsonResponse;
 import repositories.DatabaseManager;
 import scheduling.Schedule;
 
@@ -54,16 +53,16 @@ public class WSEndpoint {
     		if(s != null)
     		{
     			s.username = username;
-    			JsonResponse bRes = null;
+    			WSResponse bRes = null;
     			
 				if(DatabaseManager.setPublic(username, s.id) > 0)
 				{
-					bRes = new JsonResponse("scheduleID", new UsernameScheduleID(username, s.id).toJson());
-					sendMessage(new JsonResponse("ok", null).toJson()); 
+					bRes = new WSResponse(username, s.id, s.scheduleName);
+					sendMessage(new WSResponse().toJson()); 
 				}
 				else
 				{
-					sendMessage(new JsonResponse("error", "username does not match").toJson());
+					sendMessage(new WSResponse("Username does not match").toJson());
 				}
 				
     			if(bRes != null)
@@ -79,13 +78,13 @@ public class WSEndpoint {
     		}
     		else
     		{
-    			sendMessage(new JsonResponse("error", "invalid request").toJson()); 
+    			sendMessage(new WSResponse("Invalid request.").toJson()); 
     		}
 
     	}
     	else
     	{
-    		sendMessage(new JsonResponse("error", "not logged in").toJson()); 
+    		sendMessage(new WSResponse("You must login first.").toJson()); 
     	}      
     }
  
@@ -111,14 +110,27 @@ public class WSEndpoint {
     }
 }
 
-class UsernameScheduleID {
-	public UsernameScheduleID(String username, int scheduleId)
+class WSResponse {
+	public WSResponse(String username, int scheduleId, String scheduleName)
 	{
-		username = this.username;
-		scheduleId = this.scheduleId;
+		this.status = "success";
+		this.username = username;
+		this.scheduleId = scheduleId;
+		this.scheduleName = scheduleName;
 	}
 	
-	String username;
+	public WSResponse(String message)
+	{
+		this.status = "error";
+		this.message = message;
+	}
+	
+	public WSResponse()
+	{
+		this.status = "ok";
+	}
+	
+	String status, username, scheduleName, message;
 	int scheduleId;
 	
     public String toJson()
