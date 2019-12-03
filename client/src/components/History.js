@@ -71,7 +71,12 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   };
 
   const handlePublish = () => {
-    const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    let socket;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    } else {
+      socket = new WebSocket('ws://' + window.location.host + '/api/broadcast-schedules');
+    }
     socket.addEventListener('message', function(event) {
       console.log('Message from sent ', event.data);
       setIsLoading(true);

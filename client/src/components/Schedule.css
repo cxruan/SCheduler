@@ -11,3 +11,14 @@
   width: 100%;
   text-align: left;
 }
+
+.rbc-day-slot .rbc-event {
+  border: 1px solid #990000;
+  display: flex;
+  max-height: 100%;
+  min-height: 20px;
+  flex-flow: column wrap;
+  align-items: flex-start;
+  overflow: hidden;
+  position: absolute;
+}

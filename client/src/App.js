@@ -15,6 +15,13 @@ const mapDispatchToProps = dispatch => ({
 });
 
 function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
+  let socket;
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+  } else {
+    socket = new WebSocket('ws://' + window.location.host + '/api/broadcast-schedules');
+  }
+
   React.useEffect(() => {
     axios.get('/api/login-status').then(function({ data }) {
       if (data.type === 'true') {
@@ -34,7 +41,6 @@ function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
     onTabClick(TABS.COMMUNITY, 'Community');
   };
 
-  const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
   socket.addEventListener('message', function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
