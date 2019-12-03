@@ -46,7 +46,7 @@ export function parseStateToScores(schedules) {
 }
 
 export function parseCourseToState(courses) {
-  return courses.map(course => ({ ...course, penalize: true, include: false }));
+  return courses.map(course => ({ ...course, penalize: true, include: true }));
 }
 
 const weekdays = ['M', 'Tue', 'W', 'Thu', 'F'];

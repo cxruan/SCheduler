@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column'
   },
   fixedHeight1: {
-    height: 330,
+    height: 250,
     marginBottom: theme.spacing(2)
   },
   fixedHeight2: {
@@ -300,15 +300,16 @@ function Preference({
                 <Grid item>
                   <Chip color="primary" label="For at least" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item>
                   <TextField
+                    style={{ width: 90 }}
                     type="number"
                     InputLabelProps={{
                       shrink: true
                     }}
                     margin="none"
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">Mins</InputAdornment>
+                      endAdornment: <InputAdornment position="end">mins</InputAdornment>
                     }}
                     onChange={handleNewReservedLengthChange}
                     defaultValue={newReserved.length}
@@ -316,18 +317,6 @@ function Preference({
                 </Grid>
               </Grid>
             </Grid>
-            {/* <Grid item>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Minimum time that overlaps the above time frame.
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  
-                </Grid>
-              </Grid>
-            </Grid> */}
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
@@ -401,7 +390,7 @@ function Preference({
             selection: false,
             toolbar: false,
             pageSizeOptions: [],
-            pageSize: 5,
+            pageSize: 7,
             padding: 'dense'
           }}
         />

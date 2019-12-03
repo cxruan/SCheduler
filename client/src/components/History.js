@@ -71,7 +71,12 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
   };
 
   const handlePublish = () => {
-    const socket = new WebSocket('/api/broadcast-schedules');
+    let socket;
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+    } else {
+      socket = new WebSocket('/api/broadcast-schedules');
+    }
     socket.addEventListener('message', function(event) {
       console.log('Message from sent ', event.data);
       setIsLoading(true);
@@ -135,11 +140,6 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
               </Button>
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
-                Export
-              </Button>
-            </Grid>
-            <Grid item xs={4}>
               <Button
                 color="primary"
                 variant="contained"
@@ -148,6 +148,11 @@ function History({ schedules, selectedScheduleID, onRowClick, onHistoryGet }) {
                 disabled={selected === undefined || selected.published}
               >
                 Publish
+              </Button>
+            </Grid>
+            <Grid item xs={4}>
+              <Button color="primary" variant="contained" fullWidth>
+                Export
               </Button>
             </Grid>
           </Grid>
