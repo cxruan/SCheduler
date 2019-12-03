@@ -101,7 +101,7 @@ public class AddCourseBin extends HttpServlet {
 				}
 				
 				res = new AddCourseBinResponse();
-				res.dataAL.add(new ResponseItemHeader(courseID, "parent", null));
+				res.dataAL.add(new ResponseItemHeader(courseID, "adult", null));
 				
 				for(String type : map.keySet())
 				{
