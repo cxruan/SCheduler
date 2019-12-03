@@ -42,7 +42,7 @@ public class Schedule implements Comparable<Schedule> {
         for (int i = 0; i < 7; i++) {
             ArrayList<TimeRange> currDay = new ArrayList<TimeRange>();
             for (Section s : sections) {
-                if (s.penalize && s.days.contains(i + 1)) {
+                if (s.penalize && s.days.contains(i + 1) && s.time != null) {
                     int index = -(Collections.binarySearch(currDay, s.time) + 1);
                     currDay.add(index, s.time);
                 }
