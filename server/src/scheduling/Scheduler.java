@@ -112,28 +112,32 @@ public class Scheduler {
 
         for (Section curr : courses[courseNum].elements[componentNum].elements) {
 
-            if (!curr.include || curr.time == null || curr.days == null)
+            if (!curr.include)
                 continue;
-                
+            
             boolean valid = true;
-            for (int day : curr.days) {
-                int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
-                if (index >= 0) {
-                    valid = false;
-                    break;
-                } else {
-                    int insertAt = -(index + 1);
-                    if (insertAt > 0 && timeTable.get(day - 1).get(insertAt - 1).overlaps(curr.time)) {
+            if(curr.time != null && curr.days != null) {
+            	for (int day : curr.days) {
+                    int index = Collections.binarySearch(timeTable.get(day - 1), curr.time);
+                    if (index >= 0) {
                         valid = false;
                         break;
-                    }
-                    if (insertAt < timeTable.get(day - 1).size()
-                            && timeTable.get(day - 1).get(insertAt).overlaps(curr.time)) {
-                        valid = false;
-                        break;
+                    } else {
+                        int insertAt = -(index + 1);
+                        if (insertAt > 0 && timeTable.get(day - 1).get(insertAt - 1).overlaps(curr.time)) {
+                            valid = false;
+                            break;
+                        }
+                        if (insertAt < timeTable.get(day - 1).size()
+                                && timeTable.get(day - 1).get(insertAt).overlaps(curr.time)) {
+                            valid = false;
+                            break;
+                        }
                     }
                 }
             }
+            
+            
             if (valid) {
                 selected.add(curr);
                 for (int day : curr.days) {
