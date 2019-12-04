@@ -60,58 +60,66 @@ public class AddCourseBin extends HttpServlet {
 			URL url = new URL("https://classes.usc.edu/term-" + termID + "/course/" + courseID);
 			HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 			connect.setRequestMethod("GET");
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(connect.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			try {
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
-				}
-			} catch (IOException ioe) {
-				throw new ServletException(ioe);
-			}
-
-			Document doc = Jsoup.parse(sb.toString());
-			Elements info = doc.select(".sections");
-
-			if (info == null) {
+			
+			if(connect.getResponseCode() != 200)
+			{
 				res = new AddCourseBinResponse("Course does not exist.");
-			} else {
-				courseID = courseID.toUpperCase();
-				Map<String, ArrayList<SessionInfo>> map = new HashMap<String, ArrayList<SessionInfo>>();
-
-				for (Element row : info.select("tr[data-section-id]")) {
-					SessionInfo sf = new SessionInfo();
-						sf.id = row.select("td.section").text();
-						sf.class_type = row.select("td.type").text();
-						sf.time = row.select("td.time").text();
-						sf.days =  row.select("td.days").text();
-						sf.instructor = row.select("td.instructor").text();
-						sf.location = row.select("td.location").text();
-						sf.type = "child";
-						sf.parentId = courseID + "-" + sf.class_type;
-
-						if(!map.containsKey(sf.class_type))
-						{
-							map.put(sf.class_type, new ArrayList<SessionInfo>());
-						}
-						
-						map.get(sf.class_type).add(sf);
+			}
+			else
+			{
+				BufferedReader br = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+				try {
+					while ((line = br.readLine()) != null) {
+						sb.append(line);
+					}
+				} catch (IOException ioe) {
+					throw new ServletException(ioe);
 				}
-				
-				res = new AddCourseBinResponse();
-				res.dataAL.add(new ResponseItemHeader(courseID, "adult", null));
-				
-				for(String type : map.keySet())
-				{
-					res.dataAL.add(new ResponseItemHeader(courseID + "-" + type, "child", courseID));
-					for(SessionInfo session : map.get(type))
+
+				Document doc = Jsoup.parse(sb.toString());
+				Elements info = doc.select(".sections");
+
+				if (info == null) {
+					res = new AddCourseBinResponse("Course does not exist.");
+				} else {
+					courseID = courseID.toUpperCase();
+					Map<String, ArrayList<SessionInfo>> map = new HashMap<String, ArrayList<SessionInfo>>();
+
+					for (Element row : info.select("tr[data-section-id]")) {
+						SessionInfo sf = new SessionInfo();
+							sf.id = row.select("td.section").text();
+							sf.class_type = row.select("td.type").text();
+							sf.time = row.select("td.time").text();
+							sf.days =  row.select("td.days").text();
+							sf.instructor = row.select("td.instructor").text();
+							sf.location = row.select("td.location").text();
+							sf.type = "child";
+							sf.parentId = courseID + "-" + sf.class_type;
+
+							if(!map.containsKey(sf.class_type))
+							{
+								map.put(sf.class_type, new ArrayList<SessionInfo>());
+							}
+							
+							map.get(sf.class_type).add(sf);
+					}
+					
+					res = new AddCourseBinResponse();
+					res.dataAL.add(new ResponseItemHeader(courseID, "adult", null));
+					
+					for(String type : map.keySet())
 					{
-						res.dataAL.add(session);
+						res.dataAL.add(new ResponseItemHeader(courseID + "-" + type, "child", courseID));
+						for(SessionInfo session : map.get(type))
+						{
+							res.dataAL.add(session);
+						}
 					}
 				}
 			}
+			
 		}
 		
 		response.getWriter().append(res.toJson());
