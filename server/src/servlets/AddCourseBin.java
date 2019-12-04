@@ -81,7 +81,7 @@ public class AddCourseBin extends HttpServlet {
 				Document doc = Jsoup.parse(sb.toString());
 				Elements info = doc.select(".sections");
 
-				if (info == null) {
+				if (info == null || info.isEmpty()) {
 					res = new AddCourseBinResponse("Course does not exist.");
 				} else {
 					courseID = courseID.toUpperCase();
