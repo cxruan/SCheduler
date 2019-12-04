@@ -1,4 +1,5 @@
 import moment from 'moment';
+import html2canvas from 'html2canvas';
 
 export function parseStateToTime(mins) {
   return moment('1880-10-06 00:00').add(mins, 'm');
@@ -130,4 +131,13 @@ export function parseStateToCommunity(schedules) {
     scheduleName: schedule.scheduleName,
     username: schedule.username
   }));
+}
+
+export function handleCalendarExport() {
+  html2canvas(document.querySelector('#cal')).then(function(canvas) {
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'myfile.png';
+    a.click();
+  });
 }

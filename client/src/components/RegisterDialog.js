@@ -1,17 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Typography,
-  CssBaseline,
-  TextField,
-  Button,
-  Container,
-  Dialog
-} from '@material-ui/core';
+import { CssBaseline, TextField, Button, Container, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { withSnackbar } from 'notistack';
 import axios from 'axios';
 
@@ -34,21 +25,30 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  button: {
+    margin: theme.spacing(3, 0, 2)
   }
 }));
 
 const mapDispatchToProps = dispatch => ({
+  onLoginClick: openLogin => dispatch({ type: 'TOGGLE_LOGIN', openLogin }),
   onRegisterClick: openRegister => dispatch({ type: 'TOGGLE_REGISTER', openRegister }),
   onLogIn: username => dispatch({ type: 'USER_LOGIN', username })
 });
 
-function RegisterDialog({ openRegister, onRegisterClick, onLogIn, enqueueSnackbar }) {
+function RegisterDialog({ openRegister, onRegisterClick, onLogIn, enqueueSnackbar, onLoginClick }) {
   const [values, setValues] = React.useState({ username: '', password: '', confirmation: '' });
   const [errorMsg, setErrorMsg] = React.useState('');
   const classes = useStyles();
 
   const handleRegisterClose = () => {
     onRegisterClick(false);
+  };
+
+  const handleLoginOpen = () => {
+    onRegisterClick(false);
+    onLoginClick(true);
   };
 
   const handleValueChange = event => {
@@ -93,12 +93,8 @@ function RegisterDialog({ openRegister, onRegisterClick, onLogIn, enqueueSnackba
       <Container component="main">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
+          <img src="img/logo.png" alt="Logo" width="183" height="46" />
+          <br />
           <TextField
             error={Boolean(errorMsg)}
             variant="outlined"
@@ -146,6 +142,9 @@ function RegisterDialog({ openRegister, onRegisterClick, onLogIn, enqueueSnackba
           >
             Sign Up
           </Button>
+          <Button fullWidth className={classes.button} onClick={handleLoginOpen}>
+            Go Back To Sing In
+          </Button>
         </div>
       </Container>
     </Dialog>
@@ -156,7 +155,8 @@ RegisterDialog.propTypes = {
   openRegister: PropTypes.bool.isRequired,
   onRegisterClick: PropTypes.func.isRequired,
   onLogIn: PropTypes.func.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  onLoginClick: PropTypes.func.isRequired
 };
 
 export default connect(

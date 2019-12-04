@@ -53,6 +53,7 @@ function CustomedToolbar({ errorText, setErrorText, setLoading, addNewCourse, on
         }
       })
       .then(function({ data }) {
+        console.log(data);
         if (data.status === 'error') {
           setErrorText(data.message);
         } else {
@@ -152,6 +153,7 @@ function CourseBin({ courses, addNewCourse, onPenalizeChange, onIncludeChange, o
           render: rowData => (
             <Checkbox
               id={rowData.id}
+              color="primary"
               style={{ padding: 0 }}
               checked={rowData.include}
               onChange={handleIncludeChange}
@@ -169,7 +171,7 @@ function CourseBin({ courses, addNewCourse, onPenalizeChange, onIncludeChange, o
             <Checkbox
               id={rowData.id}
               style={{ padding: 0 }}
-              color="default"
+              color="primary"
               checked={rowData.penalize}
               onChange={handlePenalizeChange}
             />
