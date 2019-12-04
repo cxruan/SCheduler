@@ -89,20 +89,21 @@ public class Scheduler {
     private void solve(int courseNum, int componentNum, ArrayList<Section> selected,
             ArrayList<ArrayList<TimeRange>> timeTable, PriorityQueue<Schedule> schedulesQueue) {
         if (courseNum >= courses.length) {
-            Schedule s = new Schedule(selected.toArray(new Section[] {}));
-            s.early = early.evaluate(s) / 1000;
-            s.late = late.evaluate(s) / 1000;
-            s.breaks = breaks.evaluate(s) / 1000;
-            s.reserved = reserved.evaluate(s) / 10;
-            s.total = s.early + s.late + s.breaks + s.reserved;
+        	if(!selected.isEmpty()) {
+        		Schedule s = new Schedule(selected.toArray(new Section[] {}));
+                s.early = early.evaluate(s) / 1000;
+                s.late = late.evaluate(s) / 1000;
+                s.breaks = breaks.evaluate(s) / 1000;
+                s.reserved = reserved.evaluate(s) / 10;
+                s.total = s.early + s.late + s.breaks + s.reserved;
 
-            if (schedulesQueue.size() < MAX_SCHEDULE_COUNT) {
-                schedulesQueue.add(s);
-            } else {
-                schedulesQueue.add(s);
-                schedulesQueue.remove();
-            }
-
+                if (schedulesQueue.size() < MAX_SCHEDULE_COUNT) {
+                    schedulesQueue.add(s);
+                } else {
+                    schedulesQueue.add(s);
+                    schedulesQueue.remove();
+                }
+        	}
             return;
         }
         if (componentNum >= courses[courseNum].elements.length) {
