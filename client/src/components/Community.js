@@ -79,7 +79,7 @@ function Community({ schedules, selectedScheduleID, onRowClick, onCommunityGet }
                 isLoading={isLoading}
                 data={parseStateToCommunity(schedules)}
                 columns={[
-                  { title: 'Id', field: 'id', defaultSort: 'asc' },
+                  { title: 'Id', field: 'id', defaultSort: 'desc' },
                   { title: 'Username', field: 'username', defaultSort: 'asc' },
                   { title: 'Schedule Name', field: 'scheduleName', defaultSort: 'asc' }
                 ]}
@@ -119,7 +119,7 @@ function Community({ schedules, selectedScheduleID, onRowClick, onCommunityGet }
                   style={{ maxHeight: 2000 }}
                   toolbar={false}
                   min={new Date('1880-10-06 08:00')}
-                  max={new Date('1880-10-06 20:00')}
+                  max={new Date('1880-10-06 22:00')}
                   step={15}
                   timeslots={isZoom ? 2 : 4}
                   components={{ event: CustomCalEvent }}
