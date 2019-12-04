@@ -97,15 +97,6 @@ const useStyles = makeStyles(theme => ({
     }
   },
   appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto'
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  },
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -172,10 +163,7 @@ function Dashboard({
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, openDrawer && classes.appBarShift)}
-      >
+      <AppBar position="fixed" className={clsx(classes.appBar, openDrawer && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"

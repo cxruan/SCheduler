@@ -1,17 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Typography,
-  CssBaseline,
-  TextField,
-  Button,
-  Container,
-  Dialog
-} from '@material-ui/core';
+import { CssBaseline, TextField, Button, Container, Dialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { withSnackbar } from 'notistack';
 import axios from 'axios';
 
@@ -97,12 +88,8 @@ function LoginDialog({ openLogin, onLoginClick, onRegisterClick, onLogIn, enqueu
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+          <img src="img/logo.png" alt="Logo" width="183" height="46" />
+          <br />
           <TextField
             error={Boolean(errorMsg)}
             variant="outlined"
