@@ -19,7 +19,6 @@ import {
   Tooltip,
   Avatar
 } from '@material-ui/core';
-import { orange } from '@material-ui/core/colors';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -77,6 +76,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   drawerPaper: {
+    background:
+      'linear-gradient(0deg, rgba(153,0,0,1) 0%, rgba(255,204,0,1) 36%, rgba(255,255,255,1) 56%)',
     position: 'relative',
     whiteSpace: 'nowrap',
     width: drawerWidth,
@@ -107,8 +108,8 @@ const useStyles = makeStyles(theme => ({
     height: 480
   },
   orange: {
-    color: '#fff',
-    backgroundColor: orange[500]
+    color: theme.palette.secondary.contrastText,
+    backgroundColor: theme.palette.secondary.main
   }
 }));
 

@@ -142,7 +142,7 @@ function Schedule({
                   style={{ maxHeight: 2000 }}
                   toolbar={false}
                   min={new Date('1880-10-06 08:00')}
-                  max={new Date('1880-10-06 20:00')}
+                  max={new Date('1880-10-06 22:00')}
                   step={15}
                   timeslots={isZoom ? 2 : 4}
                   components={{ event: CustomCalEvent }}
