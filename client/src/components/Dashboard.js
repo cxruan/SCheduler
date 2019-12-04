@@ -19,7 +19,7 @@ import {
   Tooltip,
   Avatar
 } from '@material-ui/core';
-import { purple } from '@material-ui/core/colors';
+import { orange } from '@material-ui/core/colors';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -97,15 +97,6 @@ const useStyles = makeStyles(theme => ({
     }
   },
   appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto'
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  },
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -115,9 +106,9 @@ const useStyles = makeStyles(theme => ({
   fixedHeight: {
     height: 480
   },
-  purple: {
+  orange: {
     color: '#fff',
-    backgroundColor: purple[500]
+    backgroundColor: orange[500]
   }
 }));
 
@@ -172,10 +163,7 @@ function Dashboard({
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="absolute"
-        className={clsx(classes.appBar, openDrawer && classes.appBarShift)}
-      >
+      <AppBar position="fixed" className={clsx(classes.appBar, openDrawer && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
@@ -191,7 +179,7 @@ function Dashboard({
           </Typography>
           {user.status && (
             <Tooltip title={user.username} classes={tooltipClasses}>
-              <Avatar className={classes.purple}>{user.username[0]}</Avatar>
+              <Avatar className={classes.orange}>{user.username[0]}</Avatar>
             </Tooltip>
           )}
           {user.status ? (

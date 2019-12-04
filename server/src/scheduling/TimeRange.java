@@ -41,7 +41,7 @@ public class TimeRange implements Comparable<TimeRange> {
 
     public boolean overlaps(TimeRange range)
     {
-        return contains(range.start) || contains(range.end);
+        return contains(range.start) || contains(range.end) || range.contains(start) || range.contains(end);
     }
 
     public int length()

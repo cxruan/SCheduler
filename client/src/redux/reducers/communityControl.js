@@ -1,6 +1,6 @@
 const initialState = {
   schedules: [],
-  selectedScheduleID: 1
+  selectedScheduleID: 0
 };
 
 export default function(state = initialState, action) {

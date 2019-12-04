@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
-import { Button } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import axios from 'axios';
 import Dashboard from './components/Dashboard';
 import TABS from './constants';
@@ -15,26 +16,12 @@ const mapDispatchToProps = dispatch => ({
 });
 
 function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
-  React.useEffect(() => {
-    axios.get('/api/login-status').then(function({ data }) {
-      if (data.type === 'true') {
-        onLogIn(data.message);
-      }
-    });
-  }, []);
-
-  const action = key => (
-    <Button color="secondary" variant="contained" onClick={() => handleButtonClick(key)}>
-      Have a look!
-    </Button>
-  );
-
-  const handleButtonClick = key => {
-    onRowClick(key);
-    onTabClick(TABS.COMMUNITY, 'Community');
-  };
-
-  const socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+  let socket;
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    socket = new WebSocket('ws://localhost:8080/api/broadcast-schedules');
+  } else {
+    socket = new WebSocket('ws://' + window.location.host + '/api/broadcast-schedules');
+  }
   socket.addEventListener('message', function(event) {
     const data = JSON.parse(event.data);
     console.log(data);
@@ -50,6 +37,25 @@ function App({ enqueueSnackbar, onLogIn, onTabClick, onRowClick }) {
       }
     });
   });
+
+  React.useEffect(() => {
+    axios.get('/api/login-status').then(function({ data }) {
+      if (data.type === 'true') {
+        onLogIn(data.message);
+      }
+    });
+  }, []);
+
+  const action = key => (
+    <IconButton color="secondary" variant="contained" onClick={() => handleButtonClick(key)}>
+      <VisibilityIcon />
+    </IconButton>
+  );
+
+  const handleButtonClick = key => {
+    onRowClick(key);
+    onTabClick(TABS.COMMUNITY, 'Community');
+  };
 
   return <Dashboard />;
 }

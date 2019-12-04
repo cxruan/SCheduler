@@ -8,21 +8,24 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Button, Paper, Box } from '@material-ui/core/';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { parseStateToCalEvents, parseStateToScores, parseStatesToGenSchedule } from '../utils';
+import {
+  parseStateToCalEvents,
+  parseStateToScores,
+  parseStatesToGenSchedule,
+  handleCalendarExport
+} from '../utils';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './Schedule.css';
 import CustomCalEvent from './CustomCalEvent';
 import SaveToHistoryDialog from './SaveToHistoryDialog';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   paper: {
-    padding: theme.spacing(2),
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column'
   },
   fixedHeight: {
-    height: '80vh'
+    height: 580
   }
 }));
 
@@ -86,32 +89,36 @@ function Schedule({
       <Grid item xs={12} md={6} lg={4}>
         <Grid container spacing={5} direction="column">
           <Grid item xs={12}>
-            <MaterialTable
-              isLoading={isLoading}
-              data={parseStateToScores(schedules)}
-              columns={[
-                { title: 'Id', field: 'id', defaultSort: 'asc' },
-                { title: 'Total', field: 'total', defaultSort: 'asc' },
-                { title: 'Early', field: 'early', defaultSort: 'asc' },
-                { title: 'Late', field: 'late', defaultSort: 'asc' },
-                { title: 'Breaks', field: 'breaks', defaultSort: 'asc' },
-                { title: 'Reserved', field: 'reserved', defaultSort: 'asc' }
-              ]}
-              options={{
-                search: false,
-                sorting: true,
-                selection: false,
-                pageSize: 10,
-                pageSizeOptions: [],
-                padding: 'dense',
-                rowStyle: rowData => ({
-                  backgroundColor:
-                    selectedScheduleID !== 0 && selectedScheduleID === rowData.id ? '#EEE' : '#FFF'
-                })
-              }}
-              title="Results"
-              onRowClick={handleScoresRowClick}
-            />
+            <Box height={549} mb={1}>
+              <MaterialTable
+                isLoading={isLoading}
+                data={parseStateToScores(schedules)}
+                columns={[
+                  { title: 'Id', field: 'id', defaultSort: 'asc' },
+                  { title: 'Total', field: 'total', defaultSort: 'asc' },
+                  { title: 'Early', field: 'early', defaultSort: 'asc' },
+                  { title: 'Late', field: 'late', defaultSort: 'asc' },
+                  { title: 'Breaks', field: 'breaks', defaultSort: 'asc' },
+                  { title: 'Reserved', field: 'reserved', defaultSort: 'asc' }
+                ]}
+                options={{
+                  search: false,
+                  sorting: true,
+                  selection: false,
+                  pageSize: 11,
+                  pageSizeOptions: [],
+                  padding: 'dense',
+                  rowStyle: rowData => ({
+                    backgroundColor:
+                      selectedScheduleID !== 0 && selectedScheduleID === rowData.id
+                        ? '#EEE'
+                        : '#FFF'
+                  })
+                }}
+                title="Results"
+                onRowClick={handleScoresRowClick}
+              />
+            </Box>
           </Grid>
           <Grid item xs={12}>
             <Button color="primary" variant="contained" fullWidth onClick={handleGeneSchedules}>
@@ -121,8 +128,30 @@ function Schedule({
         </Grid>
       </Grid>
       <Grid item xs={12} md={6} lg={8}>
-        <Paper className={fixedHeightPaper}>
-          <Grid container spacing={4} direction="row">
+        <Grid container spacing={2} direction="column">
+          <Grid item>
+            <Paper className={fixedHeightPaper}>
+              <Box id="cal">
+                <Calendar
+                  id="timetable"
+                  localizer={localizer}
+                  defaultView="work_week"
+                  views={['work_week']}
+                  defaultDate={new Date(moment('1880-10-06 00:00'))}
+                  events={getSelectedCalEvents()}
+                  style={{ maxHeight: 2000 }}
+                  toolbar={false}
+                  min={new Date('1880-10-06 08:00')}
+                  max={new Date('1880-10-06 20:00')}
+                  step={15}
+                  timeslots={isZoom ? 2 : 4}
+                  components={{ event: CustomCalEvent }}
+                  formats={{ dayFormat: 'ddd' }}
+                />
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item container spacing={5} direction="row" justify="center">
             <Grid item xs={4}>
               <Button color="primary" variant="contained" fullWidth onClick={handleZoomClick}>
                 Zoom {!isZoom ? 'In' : 'Out'}
@@ -144,29 +173,12 @@ function Schedule({
               <SaveToHistoryDialog />
             </Grid>
             <Grid item xs={4}>
-              <Button color="primary" variant="contained" fullWidth>
+              <Button color="primary" variant="contained" fullWidth onClick={handleCalendarExport}>
                 Export
               </Button>
             </Grid>
           </Grid>
-          <Box mt={3}>
-            <Calendar
-              localizer={localizer}
-              defaultView="work_week"
-              views={['work_week']}
-              defaultDate={new Date(moment('1880-10-06 00:00'))}
-              events={getSelectedCalEvents()}
-              style={{ maxHeight: '65vh' }}
-              toolbar={false}
-              min={new Date('1880-10-06 08:00')}
-              max={new Date('1880-10-06 20:00')}
-              step={15}
-              timeslots={isZoom ? 2 : 4}
-              components={{ event: CustomCalEvent }}
-              formats={{ dayFormat: 'ddd' }}
-            />
-          </Box>
-        </Paper>
+        </Grid>
       </Grid>
     </Grid>
   );
